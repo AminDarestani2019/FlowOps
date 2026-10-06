@@ -1,0 +1,263 @@
+.env
+
+# ============================================================
+# FlowOps
+# ASP.NET Core + Angular + PostgreSQL + Docker + Camunda
+# ============================================================
+
+
+# ============================================================
+# .NET / Visual Studio
+# ============================================================
+
+**/bin/
+**/obj/
+
+.vs/
+
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+TestResults/
+**/TestResults/
+
+artifacts/
+**/artifacts/
+
+*.trx
+*.coverage
+*.coveragexml
+
+
+# ============================================================
+# JetBrains Rider / IntelliJ
+# ============================================================
+
+.idea/
+*.sln.iml
+
+
+# ============================================================
+# VS Code
+# ============================================================
+
+.vscode/
+
+# If later you want to commit shared VS Code settings,
+# remove .vscode/ above and selectively ignore files instead.
+
+
+# ============================================================
+# Angular / Node.js
+# ============================================================
+
+**/node_modules/
+
+frontend/dist/
+frontend/.angular/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+coverage/
+frontend/coverage/
+
+.npm/
+.yarn/cache/
+
+
+# ============================================================
+# Environment / Secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+*.env
+*.env.*
+
+secrets/
+**/secrets/
+
+*.secret
+*.secrets
+
+appsettings.Local.json
+appsettings.*.Local.json
+
+# ASP.NET Core user-secrets are stored outside the repository
+# and should never be copied into the project.
+
+
+# ============================================================
+# Certificates / Keys
+# ============================================================
+
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+
+certificates/
+certs/
+
+
+# ============================================================
+# Database local files
+# ============================================================
+
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+postgres-data/
+postgres_data/
+
+mongo-data/
+mongo_data/
+
+redis-data/
+redis_data/
+
+camunda-data/
+camunda_data/
+
+
+# ============================================================
+# Docker local runtime data
+# ============================================================
+
+.docker-data/
+docker-data/
+
+docker-compose.override.yml
+compose.override.yml
+
+
+# ============================================================
+# Kubernetes / Helm secrets
+# ============================================================
+
+*kubeconfig*
+kubeconfig
+
+*.secret.yaml
+*.secrets.yaml
+
+helm-secrets/
+k8s-secrets/
+kubernetes-secrets/
+
+
+# ============================================================
+# Logs / Runtime
+# ============================================================
+
+*.log
+logs/
+**/logs/
+
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+*.pid
+
+
+# ============================================================
+# OS generated files
+# ============================================================
+
+# Linux
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# ============================================================
+# Backup / Temporary files
+# ============================================================
+
+*.bak
+*.tmp
+*.temp
+*.swp
+*.swo
+
+*.orig
+
+~$*
+
+
+# ============================================================
+# Generated frontend files
+# ============================================================
+
+frontend/.cache/
+frontend/.sass-cache/
+
+*.tsbuildinfo
+
+
+# ============================================================
+# Playwright / Cypress - future E2E tests
+# ============================================================
+
+playwright-report/
+test-results/
+
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+
+
+# ============================================================
+# Sonar / Code analysis
+# ============================================================
+
+.sonarqube/
+.sonar/
+
+BenchmarkDotNet.Artifacts/
+
+
+# ============================================================
+# IMPORTANT: DO NOT IGNORE THESE
+# ============================================================
+
+# EF Core migrations MUST be committed.
+# Do NOT add:
+#
+# **/Migrations/
+#
+# Angular package-lock.json SHOULD be committed.
+#
+# Dockerfiles SHOULD be committed.
+#
+# docker-compose.yml SHOULD be committed.
+#
+# Helm charts SHOULD be committed.
+#
+# Kubernetes manifests SHOULD be committed.
+#
+# BPMN / DMN files SHOULD be committed.

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="FlowOps.Api/FlowOps.Api.csproj" />
+    <Project Path="FlowOps.BuildingBlocks.Domain/FlowOps.BuildingBlocks.Domain.csproj" />
+    <Project Path="FlowOps.Modules.Procurement.Application/FlowOps.Modules.Procurement.Application.csproj" />
+    <Project Path="FlowOps.Modules.Procurement.Domain/FlowOps.Modules.Procurement.Domain.csproj" />
+    <Project Path="FlowOps.Modules.Procurement.Infrastructure/FlowOps.Modules.Procurement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="FlowOps.Modules.Procurement.Domain.Tests/FlowOps.Modules.Procurement.Domain.Tests.csproj" />
+    <Project Path="FlowOps.Modules.Procurement.IntegrationTests/FlowOps.Modules.Procurement.IntegrationTests.csproj" Id="8d1c4d66-c32a-4886-8c16-101f13f99d9c" />
+  </Folder>
+</Solution>

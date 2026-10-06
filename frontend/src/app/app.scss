@@ -1,0 +1,17 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  background: #0f172a;
+
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .brand {
+    font-size: 23px;
+    font-weight: 700;
+  }
+}

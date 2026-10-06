@@ -1,0 +1,101 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">PROCUREMENT</span>
+      <h1>Create Purchase Request</h1>
+      <p>Create a new draft purchase request.</p>
+    </div>
+  </header>
+
+  <div class="form-card">
+
+    <form
+      [formGroup]="createForm"
+      (ngSubmit)="submit()">
+
+      <div class="field">
+        <label for="departmentId">
+          Department ID
+        </label>
+
+        <input
+          id="departmentId"
+          type="text"
+          formControlName="departmentId"
+          placeholder="Department GUID" />
+
+        @if (
+          createForm.controls.departmentId.invalid &&
+          createForm.controls.departmentId.touched
+        ) {
+          <small class="error">
+            A valid Department ID is required.
+          </small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="currency">
+          Currency
+        </label>
+
+        <select
+          id="currency"
+          formControlName="currency">
+
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+          <option value="IRR">IRR</option>
+
+        </select>
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          [disabled]="creatingRequest()">
+
+          @if (creatingRequest()) {
+            Creating...
+          } @else {
+            Create Draft
+          }
+
+        </button>
+
+      </div>
+    </form>
+
+    @if (createError()) {
+      <div class="alert alert-error" role="alert">
+        {{ createError() }}
+      </div>
+    }
+
+    @if (createdRequest(); as request) {
+      <div class="alert alert-success" role="status">
+
+        <h3>Purchase Request Created</h3>
+
+        <p>
+          Request Number:
+          <strong>{{ request.requestNumber }}</strong>
+        </p>
+
+        <p>
+          Status:
+          <strong>{{ request.status }}</strong>
+        </p>
+
+        <p>
+          ID: {{ request.id }}
+        </p>
+
+      </div>
+    }
+
+  </div>
+
+</section>
