@@ -33,6 +33,11 @@ public static class ProcurementInfrastructureExtensions
         services.AddScoped<
             IPurchaseRequestRepository,
             PurchaseRequestRepository>();
+
+        services.AddScoped<
+            IPurchaseRequestReadService,
+            PurchaseRequestReadService>();
+
         // Clock
         services.AddSingleton<IClock, SystemClock>();
 
