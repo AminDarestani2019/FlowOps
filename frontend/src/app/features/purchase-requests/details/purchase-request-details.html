@@ -1,0 +1,526 @@
+<section class="page">
+
+  <header class="page-header">
+
+    <div>
+
+      <a
+        class="back-link"
+        routerLink="/purchase-requests">
+
+        ← Back to My Purchase Requests
+
+      </a>
+
+      <span class="eyebrow">
+        PROCUREMENT
+      </span>
+
+      <h1>
+        Purchase Request Details
+      </h1>
+
+    </div>
+
+  </header>
+
+
+  @if (loading()) {
+
+    <div class="state-card">
+      Loading purchase request...
+    </div>
+
+  }
+
+
+  @if (errorMessage()) {
+
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+
+  }
+
+
+  @if (
+    !loading() &&
+    purchaseRequest();
+    as request
+  ) {
+
+    <!-- ============================================= -->
+    <!-- SUMMARY                                       -->
+    <!-- ============================================= -->
+
+    <div class="summary-card">
+
+      <div class="summary-primary">
+
+        <div>
+
+          <span class="label">
+            Request Number
+          </span>
+
+          <strong class="request-number">
+            {{ request.requestNumber }}
+          </strong>
+
+        </div>
+
+
+        <span
+          class="status"
+          [class.status-draft]="
+            request.status === 'Draft'
+          "
+          [class.status-submitted]="
+            request.status === 'Submitted'
+          "
+          [class.status-approved]="
+            request.status === 'Approved'
+          "
+          [class.status-rejected]="
+            request.status === 'Rejected'
+          ">
+
+          {{ request.status }}
+
+        </span>
+
+      </div>
+
+
+      <div class="summary-grid">
+
+        <div>
+
+          <span class="label">
+            Currency
+          </span>
+
+          <strong>
+            {{ request.currency }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Items
+          </span>
+
+          <strong>
+            {{ request.items.length }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Total Amount
+          </span>
+
+          <strong>
+            {{ request.totalAmount | number:'1.2-2' }}
+            {{ request.currency }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Created
+          </span>
+
+          <strong>
+            {{
+              request.createdAtUtc
+                | date:'yyyy-MM-dd HH:mm'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Submitted
+          </span>
+
+          <strong>
+
+            @if (request.submittedAtUtc) {
+
+              {{
+                request.submittedAtUtc
+                  | date:'yyyy-MM-dd HH:mm'
+              }}
+
+            } @else {
+
+              —
+
+            }
+
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ============================================= -->
+    <!-- ACTIONS                                       -->
+    <!-- ============================================= -->
+
+    @if (request.status === 'Draft') {
+
+      <div class="action-card">
+
+        <div>
+
+          <h2>
+            Submit for Approval
+          </h2>
+
+          <p>
+            Submit this purchase request to begin
+            the approval process.
+          </p>
+
+          @if (request.items.length === 0) {
+
+            <p class="action-warning">
+              Add at least one item before submitting.
+            </p>
+
+          }
+
+        </div>
+
+
+        <button
+          type="button"
+          class="submit-button"
+          [disabled]="
+            !canSubmit() ||
+            submitting()
+          "
+          (click)="requestSubmit()">
+
+          Submit for Approval
+
+        </button>
+
+      </div>
+
+    }
+
+    @if (
+      confirmingSubmit() &&
+      request.status === 'Draft'
+    ) {
+
+      <div class="confirmation-card">
+
+        <div>
+
+          <h3>
+            Confirm submission
+          </h3>
+
+          <p>
+            You are about to submit
+
+            <strong>
+              {{ request.requestNumber }}
+            </strong>
+
+            for approval.
+          </p>
+
+          <p>
+            After submission, the request will
+            no longer be considered a Draft.
+          </p>
+
+        </div>
+
+
+        <div class="confirmation-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="submitting()"
+            (click)="cancelSubmit()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="button"
+            class="submit-button"
+            [disabled]="submitting()"
+            (click)="confirmSubmit()">
+
+            @if (submitting()) {
+
+              Submitting...
+
+            } @else {
+
+              Confirm Submit
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    @if (submitSuccess()) {
+
+      <div class="alert alert-success">
+
+        {{ submitSuccess() }}
+
+      </div>
+
+    }
+
+
+    @if (submitError()) {
+
+      <div class="alert alert-error">
+
+        {{ submitError() }}
+
+      </div>
+
+    }
+
+
+    <!-- ============================================= -->
+    <!-- TECHNICAL INFORMATION                         -->
+    <!-- ============================================= -->
+
+    <div class="details-card">
+
+      <h2>
+        Request Information
+      </h2>
+
+      <div class="details-grid">
+
+        <div>
+
+          <span class="label">
+            Request ID
+          </span>
+
+          <code>
+            {{ request.id }}
+          </code>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Requester ID
+          </span>
+
+          <code>
+            {{ request.requesterId }}
+          </code>
+
+        </div>
+
+
+        <div>
+
+          <span class="label">
+            Department ID
+          </span>
+
+          <code>
+            {{ request.departmentId }}
+          </code>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ============================================= -->
+    <!-- ITEMS                                         -->
+    <!-- ============================================= -->
+
+    <div class="table-card">
+
+      <div class="section-heading">
+
+        <div>
+
+          <h2>
+            Purchase Items
+          </h2>
+
+          <p>
+            Items included in this request.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      @if (
+        request.items.length === 0
+      ) {
+
+        <div class="empty-items">
+
+          This request does not contain
+          any items yet.
+
+        </div>
+
+      } @else {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Description
+                </th>
+
+                <th class="numeric">
+                  Quantity
+                </th>
+
+                <th class="numeric">
+                  Unit Price
+                </th>
+
+                <th class="numeric">
+                  Line Total
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                item of request.items;
+                track item.id
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <strong>
+                      {{ item.description }}
+                    </strong>
+
+                  </td>
+
+
+                  <td class="numeric">
+                    {{ item.quantity }}
+                  </td>
+
+
+                  <td class="numeric">
+
+                    {{ item.unitPrice | number:'1.2-2' }}
+
+                    {{ request.currency }}
+
+                  </td>
+
+
+                  <td class="numeric">
+
+                    <strong>
+
+                      {{ item.lineTotal | number:'1.2-2' }}
+
+                      {{ request.currency }}
+
+                    </strong>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+
+            <tfoot>
+
+              <tr>
+
+                <td colspan="3">
+                  Total
+                </td>
+
+                <td class="numeric">
+
+                  <strong>
+
+                    {{ request.totalAmount | number:'1.2-2' }}
+
+                    {{ request.currency }}
+
+                  </strong>
+
+                </td>
+
+              </tr>
+
+            </tfoot>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+</section>

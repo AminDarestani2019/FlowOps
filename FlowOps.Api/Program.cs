@@ -6,6 +6,7 @@ using FlowOps.Modules.Procurement.Application.PurchaseRequests.CreatePurchaseReq
 using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetMyPurchaseRequests;
 using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequest;
 using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequests;
+using FlowOps.Modules.Procurement.Application.PurchaseRequests.SubmitPurchaseRequest;
 using FlowOps.Modules.Procurement.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,7 @@ builder.Services.AddScoped<AddPurchaseRequestItemHandler>();
 builder.Services.AddScoped<GetPurchaseRequestHandler>();
 builder.Services.AddScoped<GetPurchaseRequestsHandler>();
 builder.Services.AddScoped<GetMyPurchaseRequestsHandler>();
+builder.Services.AddScoped<SubmitPurchaseRequestHandler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -72,5 +74,6 @@ AddPurchaseRequestItemEndpoint.Map(app);
 GetPurchaseRequestEndpoint.Map(app);
 GetPurchaseRequestsEndpoint.Map(app);
 GetMyPurchaseRequestsEndpoint.Map(app);
+SubmitPurchaseRequestEndpoint.Map(app);
 
 app.Run();

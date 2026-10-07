@@ -27,7 +27,7 @@ describe('PurchaseRequestApi', () => {
     http.verify();
   });
 
-  it('should send a create request', () => {
+    it('should send a create request', () => {
     const payload = {
       departmentId:
         '22222222-2222-2222-2222-222222222222',
@@ -128,7 +128,6 @@ describe('PurchaseRequestApi', () => {
     });
 
   });
-
 
     it('should load my purchase requests', () => {
 
@@ -241,6 +240,171 @@ describe('PurchaseRequestApi', () => {
 
       totalPages:
         1
+
+    });
+
+  });
+
+    it('should load a purchase request by id', () => {
+
+    const id =
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+    api
+      .getById(id)
+      .subscribe(response => {
+
+        expect(
+          response.id
+        ).toBe(id);
+
+        expect(
+          response.requestNumber
+        ).toBe(
+          'PR-2026-000001'
+        );
+
+        expect(
+          response.totalAmount
+        ).toBe(3600);
+
+        expect(
+          response.items.length
+        ).toBe(2);
+
+      });
+
+
+    const request =
+      http.expectOne(
+        `/api/procurement/purchase-requests/${id}`
+      );
+
+
+    expect(
+      request.request.method
+    ).toBe('GET');
+
+
+    request.flush({
+
+      id,
+
+      requestNumber:
+        'PR-2026-000001',
+
+      requesterId:
+        '11111111-1111-1111-1111-111111111111',
+
+      departmentId:
+        '22222222-2222-2222-2222-222222222222',
+
+      currency:
+        'EUR',
+
+      status:
+        'Draft',
+
+      createdAtUtc:
+        '2026-10-07T10:00:00Z',
+
+      submittedAtUtc:
+        null,
+
+      totalAmount:
+        3600,
+
+      items: [
+
+        {
+          id:
+            'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+
+          description:
+            'Development Laptop',
+
+          quantity:
+            2,
+
+          unitPrice:
+            1500,
+
+          lineTotal:
+            3000
+        },
+
+        {
+          id:
+            'cccccccc-cccc-cccc-cccc-cccccccccccc',
+
+          description:
+            'Docking Station',
+
+          quantity:
+            3,
+
+          unitPrice:
+            200,
+
+          lineTotal:
+            600
+        }
+
+      ]
+
+    });
+
+  });
+
+    it('should submit a purchase request', () => {
+
+    const id =
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+    api
+      .submit(id)
+      .subscribe(response => {
+
+        expect(
+          response.status
+        ).toBe('Submitted');
+
+        expect(
+          response.id
+        ).toBe(id);
+
+        expect(
+          response.submittedAtUtc
+        ).toBe(
+          '2026-10-07T12:00:00Z'
+        );
+
+      });
+
+
+    const request =
+      http.expectOne(
+        `/api/procurement/purchase-requests/${id}/submit`
+      );
+
+
+    expect(
+      request.request.method
+    ).toBe('POST');
+
+
+    request.flush({
+
+      id,
+
+      requestNumber:
+        'PR-2026-000001',
+
+      status:
+        'Submitted',
+
+      submittedAtUtc:
+        '2026-10-07T12:00:00Z'
 
     });
 

@@ -9,7 +9,9 @@ import {
   CreatePurchaseRequestResponse,
   PagedResult,
   PurchaseRequestListItem,
-  PurchaseRequestListQuery
+  PurchaseRequestListQuery,
+  PurchaseRequestDetails,
+  SubmitPurchaseRequestResponse
 } from './purchase-request.models';
 
 @Injectable({
@@ -39,6 +41,25 @@ export class PurchaseRequestApi {
     return this.http.post<AddPurchaseRequestItemResponse>(
       `${this.baseUrl}/${purchaseRequestId}/items`,
       request
+    );
+  }
+
+    getById(
+    purchaseRequestId: string
+  ): Observable<PurchaseRequestDetails> {
+
+    return this.http.get<PurchaseRequestDetails>(
+      `${this.baseUrl}/${purchaseRequestId}`
+    );
+  }
+
+  submit(
+    purchaseRequestId: string
+  ): Observable<SubmitPurchaseRequestResponse> {
+
+    return this.http.post<SubmitPurchaseRequestResponse>(
+      `${this.baseUrl}/${purchaseRequestId}/submit`,
+      {}
     );
   }
 

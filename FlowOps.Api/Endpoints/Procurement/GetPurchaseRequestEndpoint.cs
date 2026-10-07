@@ -1,6 +1,5 @@
 ﻿using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequest;
 using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
-using FlowOps.Modules.Procurement.Application.Queries.GetPurchaseRequest;
 
 namespace FlowOps.Api.Endpoints.Procurement;
 

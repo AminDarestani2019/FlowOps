@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bpmn:definitions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+    id="Definitions_PurchaseRequestApproval"
+    targetNamespace="http://flowops.local/procurement">
+
+  <bpmn:process
+      id="purchase-request-approval"
+      name="Purchase Request Approval"
+      isExecutable="true">
+
+
+    <!-- ================================================= -->
+    <!-- START                                             -->
+    <!-- ================================================= -->
+
+    <bpmn:startEvent
+        id="StartEvent_Submitted"
+        name="Purchase Request Submitted">
+
+      <bpmn:outgoing>
+        Flow_Start_To_ManagerApproval
+      </bpmn:outgoing>
+
+    </bpmn:startEvent>
+
+
+    <!-- ================================================= -->
+    <!-- HUMAN TASK                                        -->
+    <!-- ================================================= -->
+
+    <bpmn:userTask
+        id="UserTask_ManagerApproval"
+        name="Manager Approval">
+
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+
+      <bpmn:incoming>
+        Flow_Start_To_ManagerApproval
+      </bpmn:incoming>
+
+      <bpmn:outgoing>
+        Flow_ManagerApproval_To_Decision
+      </bpmn:outgoing>
+
+    </bpmn:userTask>
+
+
+    <!-- ================================================= -->
+    <!-- DECISION                                          -->
+    <!-- ================================================= -->
+
+    <bpmn:exclusiveGateway
+        id="Gateway_ApprovalDecision"
+        name="Approval Decision">
+
+      <bpmn:incoming>
+        Flow_ManagerApproval_To_Decision
+      </bpmn:incoming>
+
+      <bpmn:outgoing>
+        Flow_Decision_To_Approved
+      </bpmn:outgoing>
+
+      <bpmn:outgoing>
+        Flow_Decision_To_Rejected
+      </bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+
+    <!-- ================================================= -->
+    <!-- APPROVED END                                      -->
+    <!-- ================================================= -->
+
+    <bpmn:endEvent
+        id="EndEvent_Approved"
+        name="Approved">
+
+      <bpmn:incoming>
+        Flow_Decision_To_Approved
+      </bpmn:incoming>
+
+    </bpmn:endEvent>
+
+
+    <!-- ================================================= -->
+    <!-- REJECTED END                                      -->
+    <!-- ================================================= -->
+
+    <bpmn:endEvent
+        id="EndEvent_Rejected"
+        name="Rejected">
+
+      <bpmn:incoming>
+        Flow_Decision_To_Rejected
+      </bpmn:incoming>
+
+    </bpmn:endEvent>
+
+
+    <!-- ================================================= -->
+    <!-- FLOWS                                             -->
+    <!-- ================================================= -->
+
+    <bpmn:sequenceFlow
+        id="Flow_Start_To_ManagerApproval"
+        sourceRef="StartEvent_Submitted"
+        targetRef="UserTask_ManagerApproval" />
+
+
+    <bpmn:sequenceFlow
+        id="Flow_ManagerApproval_To_Decision"
+        sourceRef="UserTask_ManagerApproval"
+        targetRef="Gateway_ApprovalDecision" />
+
+
+    <bpmn:sequenceFlow
+        id="Flow_Decision_To_Approved"
+        name="Approved"
+        sourceRef="Gateway_ApprovalDecision"
+        targetRef="EndEvent_Approved">
+
+      <bpmn:conditionExpression
+          xsi:type="bpmn:tFormalExpression">
+        = decision = "approved"
+      </bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+
+    <bpmn:sequenceFlow
+        id="Flow_Decision_To_Rejected"
+        name="Rejected"
+        sourceRef="Gateway_ApprovalDecision"
+        targetRef="EndEvent_Rejected">
+
+      <bpmn:conditionExpression
+          xsi:type="bpmn:tFormalExpression">
+        = decision = "rejected"
+      </bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+
+  </bpmn:process>
+
+
+  <!-- =================================================== -->
+  <!-- DIAGRAM                                             -->
+  <!-- =================================================== -->
+
+  <bpmndi:BPMNDiagram
+      id="BPMNDiagram_PurchaseRequestApproval">
+
+    <bpmndi:BPMNPlane
+        id="BPMNPlane_PurchaseRequestApproval"
+        bpmnElement="purchase-request-approval">
+
+
+      <bpmndi:BPMNShape
+          id="Shape_StartEvent_Submitted"
+          bpmnElement="StartEvent_Submitted">
+
+        <dc:Bounds
+            x="150"
+            y="182"
+            width="36"
+            height="36" />
+
+      </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNShape
+          id="Shape_UserTask_ManagerApproval"
+          bpmnElement="UserTask_ManagerApproval">
+
+        <dc:Bounds
+            x="250"
+            y="160"
+            width="120"
+            height="80" />
+
+      </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNShape
+          id="Shape_Gateway_ApprovalDecision"
+          bpmnElement="Gateway_ApprovalDecision"
+          isMarkerVisible="true">
+
+        <dc:Bounds
+            x="440"
+            y="175"
+            width="50"
+            height="50" />
+
+      </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNShape
+          id="Shape_EndEvent_Approved"
+          bpmnElement="EndEvent_Approved">
+
+        <dc:Bounds
+            x="600"
+            y="102"
+            width="36"
+            height="36" />
+
+      </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNShape
+          id="Shape_EndEvent_Rejected"
+          bpmnElement="EndEvent_Rejected">
+
+        <dc:Bounds
+            x="600"
+            y="262"
+            width="36"
+            height="36" />
+
+      </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNEdge
+          id="Edge_Flow_Start_To_ManagerApproval"
+          bpmnElement="Flow_Start_To_ManagerApproval">
+
+        <di:waypoint x="186" y="200" />
+        <di:waypoint x="250" y="200" />
+
+      </bpmndi:BPMNEdge>
+
+
+      <bpmndi:BPMNEdge
+          id="Edge_Flow_ManagerApproval_To_Decision"
+          bpmnElement="Flow_ManagerApproval_To_Decision">
+
+        <di:waypoint x="370" y="200" />
+        <di:waypoint x="440" y="200" />
+
+      </bpmndi:BPMNEdge>
+
+
+      <bpmndi:BPMNEdge
+          id="Edge_Flow_Decision_To_Approved"
+          bpmnElement="Flow_Decision_To_Approved">
+
+        <di:waypoint x="465" y="175" />
+        <di:waypoint x="465" y="120" />
+        <di:waypoint x="600" y="120" />
+
+      </bpmndi:BPMNEdge>
+
+
+      <bpmndi:BPMNEdge
+          id="Edge_Flow_Decision_To_Rejected"
+          bpmnElement="Flow_Decision_To_Rejected">
+
+        <di:waypoint x="465" y="225" />
+        <di:waypoint x="465" y="280" />
+        <di:waypoint x="600" y="280" />
+
+      </bpmndi:BPMNEdge>
+
+
+    </bpmndi:BPMNPlane>
+
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

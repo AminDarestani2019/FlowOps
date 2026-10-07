@@ -39,7 +39,19 @@ export const routes: Routes = [
             m.PurchaseRequestCreateComponent
         )
   },
+  {
+    path:
+      'purchase-requests/:id',
 
+    loadComponent: () =>
+      import(
+        './features/purchase-requests/details/purchase-request-details'
+      )
+        .then(
+          m =>
+            m.PurchaseRequestDetailsComponent
+        )
+  },
   {
     path:
       '**',

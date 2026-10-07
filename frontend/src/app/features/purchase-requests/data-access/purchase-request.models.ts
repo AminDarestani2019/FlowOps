@@ -51,3 +51,31 @@ export interface PurchaseRequestListQuery {
   page?: number;
   pageSize?: number;
 }
+
+export interface PurchaseRequestItemDetails {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface PurchaseRequestDetails {
+  id: string;
+  requestNumber: string;
+  requesterId: string;
+  departmentId: string;
+  currency: string;
+  status: string;
+  createdAtUtc: string;
+  submittedAtUtc: string | null;
+  totalAmount: number;
+  items: PurchaseRequestItemDetails[];
+}
+
+export interface SubmitPurchaseRequestResponse {
+  id: string;
+  requestNumber: string;
+  status: string;
+  submittedAtUtc: string;
+}

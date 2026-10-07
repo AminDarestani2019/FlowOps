@@ -196,18 +196,24 @@ public sealed class PurchaseRequest
     {
         if (Status != PurchaseRequestStatus.Draft)
         {
-            return Result.Failure(
-                PurchaseRequestErrors.InvalidStateTransition);
+            return Result.Failure(PurchaseRequestErrors.InvalidStateTransition);
         }
 
         if (_items.Count == 0)
         {
-            return Result.Failure(
-                PurchaseRequestErrors.EmptyRequest);
+            return Result.Failure(PurchaseRequestErrors.EmptyRequest);
         }
 
         Status = PurchaseRequestStatus.Submitted;
+
         SubmittedAtUtc = submittedAtUtc;
+
+        RaiseDomainEvent(
+            new PurchaseRequestSubmittedDomainEvent(
+                Id,
+                RequesterId,
+                DepartmentId,
+                submittedAtUtc));
 
         return Result.Success();
     }
