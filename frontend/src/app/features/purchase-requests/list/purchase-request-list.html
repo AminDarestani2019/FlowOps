@@ -1,0 +1,505 @@
+<section class="page">
+
+  <!-- ============================================== -->
+  <!-- HEADER                                         -->
+  <!-- ============================================== -->
+
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        PROCUREMENT
+      </span>
+
+      <h1>
+        My Purchase Requests
+      </h1>
+
+      <p>
+        Search, filter and review your purchase requests.
+      </p>
+
+    </div>
+
+
+    <a
+      class="primary-link"
+      routerLink="/purchase-requests/new">
+
+      + New Purchase Request
+
+    </a>
+
+  </header>
+
+
+  <!-- ============================================== -->
+  <!-- FILTERS                                        -->
+  <!-- ============================================== -->
+
+  <div class="filters-card">
+
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="search()">
+
+      <div class="filter-grid">
+
+
+        <div class="field">
+
+          <label for="search">
+            Search
+          </label>
+
+          <input
+            id="search"
+            type="text"
+            formControlName="search"
+            placeholder="Request number or item..." />
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="status">
+            Status
+          </label>
+
+          <select
+            id="status"
+            formControlName="status">
+
+            <option value="">
+              All statuses
+            </option>
+
+            <option value="Draft">
+              Draft
+            </option>
+
+            <option value="Submitted">
+              Submitted
+            </option>
+
+            <option value="InApproval">
+              In Approval
+            </option>
+
+            <option value="Approved">
+              Approved
+            </option>
+
+            <option value="Rejected">
+              Rejected
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
+
+            <option value="Cancelled">
+              Cancelled
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="sortBy">
+            Sort By
+          </label>
+
+          <select
+            id="sortBy"
+            formControlName="sortBy">
+
+            <option value="createdAt">
+              Created Date
+            </option>
+
+            <option value="total">
+              Total Amount
+            </option>
+
+            <option value="itemCount">
+              Item Count
+            </option>
+
+            <option value="status">
+              Status
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="direction">
+            Direction
+          </label>
+
+          <select
+            id="direction"
+            formControlName="descending">
+
+            <option [ngValue]="true">
+              Descending
+            </option>
+
+            <option [ngValue]="false">
+              Ascending
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button
+          type="submit"
+          class="primary"
+          [disabled]="loading()">
+
+          Search
+
+        </button>
+
+
+        <button
+          type="button"
+          class="secondary"
+          [disabled]="loading()"
+          (click)="reset()">
+
+          Reset
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- ERROR                                          -->
+  <!-- ============================================== -->
+
+  @if (errorMessage()) {
+
+    <div class="alert alert-error">
+
+      {{ errorMessage() }}
+
+    </div>
+
+  }
+
+
+  <!-- ============================================== -->
+  <!-- LOADING                                        -->
+  <!-- ============================================== -->
+
+  @if (loading()) {
+
+    <div class="state-card">
+
+      Loading purchase requests...
+
+    </div>
+
+  }
+
+
+  <!-- ============================================== -->
+  <!-- RESULT                                         -->
+  <!-- ============================================== -->
+
+  @if (!loading() && result(); as data) {
+
+
+    <!-- EMPTY STATE -->
+
+    @if (data.items.length === 0) {
+
+      <div class="state-card">
+
+        <h2>
+          No purchase requests found
+        </h2>
+
+        <p>
+          Try changing your filters or create a new request.
+        </p>
+
+        <a
+          routerLink="/purchase-requests/new"
+          class="primary-link">
+
+          Create Purchase Request
+
+        </a>
+
+      </div>
+
+    }
+
+
+    <!-- TABLE -->
+
+    @else {
+
+      <div class="table-card">
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>
+                  Request Number
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th class="numeric">
+                  Items
+                </th>
+
+                <th class="numeric">
+                  Total
+                </th>
+
+                <th>
+                  Created
+                </th>
+
+                <th>
+                  Actions
+                </th>
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                request of data.items;
+                track request.id
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <strong>
+                      {{ request.requestNumber }}
+                    </strong>
+
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="status"
+                      [class.status-draft]="
+                        request.status === 'Draft'
+                      "
+                      [class.status-submitted]="
+                        request.status === 'Submitted'
+                      "
+                      [class.status-approved]="
+                        request.status === 'Approved'
+                      "
+                      [class.status-rejected]="
+                        request.status === 'Rejected'
+                      ">
+
+                      {{ request.status }}
+
+                    </span>
+
+                  </td>
+
+
+                  <td class="numeric">
+
+                    {{ request.itemCount }}
+
+                  </td>
+
+
+                  <td class="numeric">
+
+                    {{ request.totalAmount | number:'1.2-2' }}
+
+                    {{ request.currency }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      request.createdAtUtc
+                        | date:'yyyy-MM-dd HH:mm'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    <a
+                      class="table-action"
+                      [routerLink]="[
+                        '/purchase-requests',
+                        request.id
+                      ]">
+
+                      View
+
+                    </a>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- PAGINATION                                 -->
+        <!-- ========================================== -->
+
+        <div class="pagination">
+
+          <div class="pagination-info">
+
+            Showing
+
+            <strong>
+              {{ showingFrom() }}
+            </strong>
+
+            -
+
+            <strong>
+              {{ showingTo() }}
+            </strong>
+
+            of
+
+            <strong>
+              {{ data.totalCount }}
+            </strong>
+
+          </div>
+
+
+          <div class="pagination-controls">
+
+            <label>
+
+              Rows:
+
+              <select
+                [formControl]="
+                  filterForm.controls.pageSize
+                "
+                (change)="changePageSize()">
+
+                <option [ngValue]="5">
+                  5
+                </option>
+
+                <option [ngValue]="10">
+                  10
+                </option>
+
+                <option [ngValue]="20">
+                  20
+                </option>
+
+                <option [ngValue]="50">
+                  50
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="
+                !hasPreviousPage() ||
+                loading()
+              "
+              (click)="previousPage()">
+
+              Previous
+
+            </button>
+
+
+            <span class="page-number">
+
+              Page
+              {{ data.page }}
+              of
+              {{ data.totalPages }}
+
+            </span>
+
+
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="
+                !hasNextPage() ||
+                loading()
+              "
+              (click)="nextPage()">
+
+              Next
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+  }
+
+</section>

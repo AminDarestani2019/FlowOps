@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 32px;
+  gap: 24px;
   background: #0f172a;
 
   a {
@@ -13,5 +14,24 @@
   .brand {
     font-size: 23px;
     font-weight: 700;
+  }
+
+   nav {
+    display: flex;
+
+    align-items: center;
+
+    gap: 24px;
+
+    a {
+      color: #cbd5e1;
+
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    a:hover {
+      color: white;
+    }
   }
 }

@@ -1,4 +1,4 @@
-﻿namespace FlowOps.Modules.Procurement.Application.Queries.GetPurchaseRequests;
+﻿namespace FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequests;
 
 public sealed record GetPurchaseRequestsQuery(
     string? Search,

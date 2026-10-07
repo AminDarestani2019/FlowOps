@@ -129,4 +129,121 @@ describe('PurchaseRequestApi', () => {
 
   });
 
+
+    it('should load my purchase requests', () => {
+
+    api
+      .getMine({
+        search: 'Laptop',
+        status: 'Draft',
+        sortBy: 'total',
+        descending: true,
+        page: 1,
+        pageSize: 10
+      })
+      .subscribe(response => {
+
+        expect(
+          response.items.length
+        ).toBe(1);
+
+        expect(
+          response.items[0].requestNumber
+        ).toBe(
+          'PR-2026-000001'
+        );
+
+        expect(
+          response.totalCount
+        ).toBe(1);
+
+      });
+
+
+    const request =
+      http.expectOne(req =>
+
+        req.url ===
+          '/api/procurement/purchase-requests/mine'
+
+        &&
+
+        req.params.get('search') ===
+          'Laptop'
+
+        &&
+
+        req.params.get('status') ===
+          'Draft'
+
+        &&
+
+        req.params.get('sortBy') ===
+          'total'
+
+        &&
+
+        req.params.get('descending') ===
+          'true'
+
+        &&
+
+        req.params.get('page') ===
+          '1'
+
+        &&
+
+        req.params.get('pageSize') ===
+          '10'
+      );
+
+
+    expect(
+      request.request.method
+    ).toBe('GET');
+
+
+    request.flush({
+
+      items: [
+        {
+          id:
+            'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+
+          requestNumber:
+            'PR-2026-000001',
+
+          status:
+            'Draft',
+
+          currency:
+            'EUR',
+
+          totalAmount:
+            3600,
+
+          itemCount:
+            2,
+
+          createdAtUtc:
+            '2026-10-07T10:00:00Z'
+        }
+      ],
+
+      page:
+        1,
+
+      pageSize:
+        10,
+
+      totalCount:
+        1,
+
+      totalPages:
+        1
+
+    });
+
+  });
+
 });

@@ -1,4 +1,4 @@
-﻿using FlowOps.Modules.Procurement.Application.Queries.Models;
+﻿using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
 using FlowOps.Modules.Procurement.Domain.PurchaseRequests;
 
 namespace FlowOps.Modules.Procurement.Application.Abstractions.Persistence;

@@ -1,4 +1,4 @@
-﻿namespace FlowOps.Modules.Procurement.Application.Queries.Models;
+﻿namespace FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
 
 public sealed record PagedResult<T>(
     IReadOnlyList<T> Items,

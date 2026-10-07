@@ -1,9 +1,9 @@
 ﻿using FlowOps.BuildingBlocks.Domain.Results;
 using FlowOps.Modules.Procurement.Application.Abstractions.Persistence;
-using FlowOps.Modules.Procurement.Application.Queries.Models;
+using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
 using FlowOps.Modules.Procurement.Domain.PurchaseRequests;
 
-namespace FlowOps.Modules.Procurement.Application.Queries.GetPurchaseRequest;
+namespace FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequest;
 
 public sealed class GetPurchaseRequestHandler
 {

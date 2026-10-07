@@ -1,8 +1,8 @@
 ﻿using FlowOps.Modules.Procurement.Application.Abstractions.Identity;
 using FlowOps.Modules.Procurement.Application.Abstractions.Persistence;
-using FlowOps.Modules.Procurement.Application.Queries.Models;
+using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
 
-namespace FlowOps.Modules.Procurement.Application.Queries.GetMyPurchaseRequests;
+namespace FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetMyPurchaseRequests;
 
 public sealed class GetMyPurchaseRequestsHandler
 {

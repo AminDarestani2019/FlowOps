@@ -1,6 +1,6 @@
 ﻿using FlowOps.BuildingBlocks.Domain.Results;
 
-namespace FlowOps.Modules.Procurement.Application.Queries.GetPurchaseRequest;
+namespace FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequest;
 
 public static class GetPurchaseRequestErrors
 {
