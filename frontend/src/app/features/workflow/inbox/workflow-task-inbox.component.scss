@@ -1,0 +1,93 @@
+.page {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+}
+
+.task-link {
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.refresh-button {
+  padding: 10px 18px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.table-card,
+.state-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.state-card {
+  padding: 20px;
+
+  &.error {
+    border-color: #d77;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+tbody {
+  tr:last-child {
+    td {
+      border-bottom: none;
+    }
+  }
+}
+
+.secondary {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #777;
+}
+
+.status {
+  font-weight: 600;
+}

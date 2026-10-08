@@ -1,0 +1,124 @@
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <h1>My Tasks</h1>
+
+      <p>
+        Workflow tasks currently waiting for action.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="loadTasks()"
+      [disabled]="loading()">
+      Refresh
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="state-card">
+      Loading workflow tasks...
+    </div>
+  }
+
+  @if (error()) {
+    <div class="state-card error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (!loading() && !error() && tasks().length === 0) {
+    <div class="state-card">
+      No active workflow tasks.
+    </div>
+  }
+
+  @if (!loading() && tasks().length > 0) {
+
+    <div class="table-card">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>State</th>
+            <th>Process</th>
+            <th>Created</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Assignee</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (task of tasks(); track task.taskKey) {
+
+            <tr>
+
+              <td>
+                <a
+                  class="task-link"
+                  [routerLink]="['/workflow/tasks', task.taskKey]">
+                  {{ task.name }}
+                </a>
+
+                <div class="secondary">
+                  {{ task.taskKey }}
+                </div>
+              </td>
+
+              <td>
+                <span class="status">
+                  {{ task.state }}
+                </span>
+              </td>
+
+              <td>
+                {{ task.processDefinitionId }}
+
+                <div class="secondary">
+                  {{ task.processInstanceKey }}
+                </div>
+              </td>
+
+              <td>
+                @if (task.createdAt) {
+                  {{ task.createdAt | date:'medium' }}
+                } @else {
+                  —
+                }
+              </td>
+
+              <td>
+                @if (task.dueDate) {
+                  {{ task.dueDate | date:'medium' }}
+                } @else {
+                  —
+                }
+              </td>
+
+              <td>
+                {{ task.priority }}
+              </td>
+
+              <td>
+                {{ task.assignee ?? 'Unassigned' }}
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+  }
+
+</div>

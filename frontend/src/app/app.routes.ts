@@ -11,7 +11,24 @@ export const routes: Routes = [
     pathMatch:
       'full'
   },
-
+  {
+    path: 'workflow/tasks',
+    loadComponent: () =>
+      import(
+        './features/workflow/inbox/workflow-task-inbox.component'
+      ).then(
+        m => m.WorkflowTaskInboxComponent
+      )
+  },
+  {
+  path: 'workflow/tasks/:taskKey',
+  loadComponent: () =>
+    import(
+      './features/workflow/task-detail/workflow-task-detail.component'
+    ).then(
+      m => m.WorkflowTaskDetailComponent
+    )
+  },
   {
     path:
       'purchase-requests',

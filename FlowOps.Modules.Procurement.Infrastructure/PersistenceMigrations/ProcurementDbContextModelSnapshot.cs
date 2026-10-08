@@ -99,6 +99,48 @@ namespace FlowOps.Modules.Procurement.Infrastructure.PersistenceMigrations
                     b.ToTable("purchase_request_items", "procurement");
                 });
 
+            modelBuilder.Entity("FlowOps.Modules.Procurement.Infrastructure.Persistence.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("AttemptCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("attempt_count");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("content");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("text")
+                        .HasColumnName("last_error");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedOnUtc", "OccurredOnUtc");
+
+                    b.ToTable("outbox_messages", "procurement");
+                });
+
             modelBuilder.Entity("FlowOps.Modules.Procurement.Domain.PurchaseRequests.PurchaseRequestItem", b =>
                 {
                     b.HasOne("FlowOps.Modules.Procurement.Domain.PurchaseRequests.PurchaseRequest", null)

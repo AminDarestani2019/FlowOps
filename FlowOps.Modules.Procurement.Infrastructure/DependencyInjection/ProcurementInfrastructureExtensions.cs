@@ -55,15 +55,28 @@ public static class ProcurementInfrastructureExtensions
             configuration.GetSection(
                 CamundaOptions.SectionName));
 
-
         services.AddHttpClient<
             IPurchaseRequestWorkflowStarter,
             CamundaPurchaseRequestWorkflowStarter>(
             (serviceProvider, client) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<CamundaOptions>>().Value;
+                var options = serviceProvider
+                    .GetRequiredService<IOptions<CamundaOptions>>()
+                    .Value;
+
                 client.BaseAddress = new Uri(options.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(15);
+            });
+
+        services.AddHttpClient<
+            IWorkflowTaskReader,
+            CamundaWorkflowTaskReader>(
+            (serviceProvider, client) =>
+            {
+                var options = serviceProvider
+                    .GetRequiredService<IOptions<CamundaOptions>>()
+                    .Value;
+
+                client.BaseAddress = new Uri(options.BaseUrl);
             });
 
         services.Configure<OutboxProcessorOptions>(configuration.GetSection(OutboxProcessorOptions.SectionName));
