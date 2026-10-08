@@ -1,9 +1,14 @@
 ﻿using FlowOps.BuildingBlocks.Domain.Time;
 using FlowOps.Modules.Procurement.Application.Abstractions.Persistence;
+using FlowOps.Modules.Procurement.Application.Abstractions.Workflow;
 using FlowOps.Modules.Procurement.Infrastructure.Persistence;
+using FlowOps.Modules.Procurement.Infrastructure.Persistence.Outbox;
 using FlowOps.Modules.Procurement.Infrastructure.Time;
+using FlowOps.Modules.Procurement.Infrastructure.Workflow.Camunda;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace FlowOps.Modules.Procurement.Infrastructure.DependencyInjection;
 
@@ -11,7 +16,8 @@ public static class ProcurementInfrastructureExtensions
 {
     public static IServiceCollection AddProcurementInfrastructure(
         this IServiceCollection services,
-        string connectionString)
+        string connectionString,
+        IConfiguration configuration)
     {
         // PostgreSQL / EF Core
         services.AddDbContext<ProcurementDbContext>(
@@ -40,6 +46,29 @@ public static class ProcurementInfrastructureExtensions
 
         // Clock
         services.AddSingleton<IClock, SystemClock>();
+
+        // -----------------------------------------------------
+        // Camunda
+        // -----------------------------------------------------
+
+        services.Configure<CamundaOptions>(
+            configuration.GetSection(
+                CamundaOptions.SectionName));
+
+
+        services.AddHttpClient<
+            IPurchaseRequestWorkflowStarter,
+            CamundaPurchaseRequestWorkflowStarter>(
+            (serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<CamundaOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(15);
+            });
+
+        services.Configure<OutboxProcessorOptions>(configuration.GetSection(OutboxProcessorOptions.SectionName));
+
+        services.AddHostedService<OutboxProcessor>();
 
         return services;
     }

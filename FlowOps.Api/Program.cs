@@ -17,8 +17,7 @@ var procurementConnectionString =
     ?? throw new InvalidOperationException(
         "Connection string 'ProcurementDatabase' was not found.");
 
-builder.Services.AddProcurementInfrastructure(
-    procurementConnectionString);
+builder.Services.AddProcurementInfrastructure(procurementConnectionString, builder.Configuration);
 
 builder.Services.AddScoped<CreatePurchaseRequestHandler>();
 builder.Services.AddScoped<AddPurchaseRequestItemHandler>();
