@@ -10,11 +10,11 @@ public static class GetTaskDetailsEndpoint
             "/api/workflow/tasks/{taskKey}",
             async (
                 string taskKey,
-                GetTaskDetailsHandler handler,
+                Handler handler,
                 CancellationToken cancellationToken) =>
             {
                 var result = await handler.HandleAsync(
-                    new GetTaskDetailsQuery(taskKey),
+                    new Query(taskKey),
                     cancellationToken);
 
                 return result is null

@@ -39,7 +39,10 @@ public sealed class CamundaPurchaseRequestWorkflowStarter
                     request.RequesterId.ToString(),
 
                 departmentId =
-                    request.DepartmentId.ToString()
+                    request.DepartmentId.ToString(),
+
+                totalAmount =
+                    request.TotalAmount
             }
         };
 

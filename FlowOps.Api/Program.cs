@@ -2,14 +2,14 @@ using FlowOps.Api.Development;
 using FlowOps.Api.Endpoints.Procurement;
 using FlowOps.Api.Endpoints.Workflow;
 using FlowOps.Modules.Procurement.Application.Abstractions.Identity;
-using FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks;
-using FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.AddPurchaseRequestItem;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.CreatePurchaseRequest;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetMyPurchaseRequests;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequest;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.GetPurchaseRequests;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.SubmitPurchaseRequest;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.AddPurchaseRequestItem;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.ApprovePurchaseRequest;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.CreatePurchaseRequest;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.GetMyPurchaseRequests;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.GetPurchaseRequest;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.GetPurchaseRequests;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.SubmitPurchaseRequest;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.RejectPurchaseRequest;
 using FlowOps.Modules.Procurement.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,9 +28,14 @@ builder.Services.AddScoped<GetPurchaseRequestHandler>();
 builder.Services.AddScoped<GetPurchaseRequestsHandler>();
 builder.Services.AddScoped<GetMyPurchaseRequestsHandler>();
 builder.Services.AddScoped<SubmitPurchaseRequestHandler>();
-builder.Services.AddScoped<GetMyTasksHandler>();
-builder.Services.AddScoped<GetMyTasksHandler>();
-builder.Services.AddScoped<GetTaskDetailsHandler>();
+builder.Services.AddScoped<ApprovePurchaseRequestHandler>();
+builder.Services.AddScoped<RejectPurchaseRequestHandler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.CompleteTask.Handler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -81,7 +86,9 @@ GetPurchaseRequestsEndpoint.Map(app);
 GetMyPurchaseRequestsEndpoint.Map(app);
 SubmitPurchaseRequestEndpoint.Map(app);
 GetMyTasksEndpoint.Map(app);
-GetMyTasksEndpoint.Map(app);
 GetTaskDetailsEndpoint.Map(app);
+CompleteTaskEndpoint.Map(app);
+ApprovePurchaseRequestEndpoint.Map(app);
+RejectPurchaseRequestEndpoint.Map(app);
 
 app.Run();

@@ -1,5 +1,5 @@
 ﻿using FlowOps.Modules.Procurement.Application.Abstractions.Persistence;
-using FlowOps.Modules.Procurement.Application.PurchaseRequests.Queries.Models;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.Models;
 using FlowOps.Modules.Procurement.Domain.PurchaseRequests;
 using FlowOps.Modules.Procurement.Domain.PurchaseRequests.ValueObjects;
 using Microsoft.EntityFrameworkCore;

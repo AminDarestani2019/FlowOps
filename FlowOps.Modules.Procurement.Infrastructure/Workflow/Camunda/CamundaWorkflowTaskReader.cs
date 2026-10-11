@@ -8,6 +8,54 @@ internal sealed class CamundaWorkflowTaskReader(
     HttpClient httpClient)
     : IWorkflowTaskReader
 {
+    public async Task<WorkflowTask?> GetActiveTaskForProcessAsync(
+    string processInstanceKey,
+    CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            filter = new
+            {
+                processInstanceKey,
+                state = "CREATED"
+            },
+            page = new
+            {
+                limit = 10
+            }
+        };
+
+        using var response =
+            await httpClient.PostAsJsonAsync(
+                "/v2/user-tasks/search",
+                request,
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result =
+            await response.Content
+                .ReadFromJsonAsync<CamundaUserTaskSearchResponse>(
+                    cancellationToken)
+            ?? throw new InvalidOperationException(
+                "Camunda returned an empty User Task search response.");
+
+        if (result.Items.Count == 0)
+        {
+            return null;
+        }
+
+        if (result.Items.Count > 1)
+        {
+            throw new InvalidOperationException(
+                $"More than one active User Task was found for " +
+                $"process instance '{processInstanceKey}'.");
+        }
+
+        return Map(
+            result.Items[0]);
+    }
+
     public async Task<IReadOnlyList<WorkflowTask>> GetActiveTasksAsync(
            CancellationToken cancellationToken = default)
     {
@@ -71,6 +119,7 @@ internal sealed class CamundaWorkflowTaskReader(
         return new WorkflowTask(
             task.UserTaskKey,
             task.Name,
+            task.ElementId,
             task.State,
             task.Assignee,
             task.ProcessDefinitionId,

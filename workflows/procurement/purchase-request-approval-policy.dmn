@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions
+    xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+    id="Definitions_PurchaseRequestApprovalPolicy"
+    name="Purchase Request Approval Policy"
+    namespace="http://flowops.local/procurement">
+
+  <decision
+      id="approvalLevel"
+      name="Determine Approval Level">
+
+    <decisionTable
+        id="DecisionTable_ApprovalLevel"
+        hitPolicy="UNIQUE">
+
+      <input
+          id="Input_TotalAmount"
+          label="Total Amount">
+
+        <inputExpression
+            id="InputExpression_TotalAmount"
+            typeRef="number">
+
+          <text>totalAmount</text>
+
+        </inputExpression>
+
+      </input>
+
+      <output
+          id="Output_ApprovalLevel"
+          label="Approval Level"
+          name="approvalLevel"
+          typeRef="string" />
+
+      <rule id="Rule_Manager">
+
+        <inputEntry id="InputEntry_Manager">
+          <text>&lt; 500</text>
+        </inputEntry>
+
+        <outputEntry id="OutputEntry_Manager">
+          <text>"MANAGER"</text>
+        </outputEntry>
+
+      </rule>
+
+      <rule id="Rule_ManagerFinance">
+
+        <inputEntry id="InputEntry_ManagerFinance">
+          <text>[500..5000]</text>
+        </inputEntry>
+
+        <outputEntry id="OutputEntry_ManagerFinance">
+          <text>"MANAGER_FINANCE"</text>
+        </outputEntry>
+
+      </rule>
+
+      <rule id="Rule_ManagerFinanceDirector">
+
+        <inputEntry id="InputEntry_ManagerFinanceDirector">
+          <text>&gt; 5000</text>
+        </inputEntry>
+
+        <outputEntry id="OutputEntry_ManagerFinanceDirector">
+          <text>"MANAGER_FINANCE_DIRECTOR"</text>
+        </outputEntry>
+
+      </rule>
+
+    </decisionTable>
+
+  </decision>
+
+</definitions>

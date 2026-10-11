@@ -1,0 +1,156 @@
+.page {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 16px 0 6px;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+}
+
+.back-button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.state-card,
+.task-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.state-card {
+  padding: 20px;
+
+  &.error {
+    border-color: #d77;
+  }
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+
+  h2 {
+    margin: 0 0 6px;
+  }
+}
+
+.status {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.secondary {
+  color: #777;
+  font-size: 13px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: #777;
+  font-size: 13px;
+}
+
+.value {
+  font-weight: 500;
+}
+
+.code {
+  font-family: monospace;
+}
+
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.approve-button,
+.reject-button {
+  min-width: 110px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.approve-button {
+  background: #2563eb;
+  color: white;
+}
+
+.reject-button {
+  background: #dc2626;
+  color: white;
+}
+
+.task-card {
+  padding: 24px;
+
+  .state-card.error {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 800px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-actions {
+    flex-direction: column;
+  }
+
+  .approve-button,
+  .reject-button {
+    width: 100%;
+  }
+}

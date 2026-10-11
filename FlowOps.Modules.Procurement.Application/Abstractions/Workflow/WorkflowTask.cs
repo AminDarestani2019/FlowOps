@@ -3,6 +3,7 @@
 public sealed record WorkflowTask(
     string TaskKey,
     string Name,
+    string ElementId,
     string State,
     string? Assignee,
     string ProcessDefinitionId,

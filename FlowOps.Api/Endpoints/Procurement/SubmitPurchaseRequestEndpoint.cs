@@ -1,4 +1,4 @@
-﻿using FlowOps.Modules.Procurement.Application.PurchaseRequests.SubmitPurchaseRequest;
+﻿using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.SubmitPurchaseRequest;
 
 namespace FlowOps.Api.Endpoints.Procurement;
 

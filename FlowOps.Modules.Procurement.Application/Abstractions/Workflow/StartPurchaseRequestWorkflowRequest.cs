@@ -3,4 +3,5 @@
 public sealed record StartPurchaseRequestWorkflowRequest(
     Guid PurchaseRequestId,
     Guid RequesterId,
-    Guid DepartmentId);
+    Guid DepartmentId,
+    decimal TotalAmount);

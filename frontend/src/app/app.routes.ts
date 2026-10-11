@@ -15,7 +15,7 @@ export const routes: Routes = [
     path: 'workflow/tasks',
     loadComponent: () =>
       import(
-        './features/workflow/inbox/workflow-task-inbox.component'
+        './features/workflow/inbox/workflow-task-inbox'
       ).then(
         m => m.WorkflowTaskInboxComponent
       )
@@ -24,7 +24,7 @@ export const routes: Routes = [
   path: 'workflow/tasks/:taskKey',
   loadComponent: () =>
     import(
-      './features/workflow/task-detail/workflow-task-detail.component'
+      './features/workflow/task-detail/workflow-task-detail'
     ).then(
       m => m.WorkflowTaskDetailComponent
     )

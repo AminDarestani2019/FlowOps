@@ -56,6 +56,35 @@ public static class ProcurementInfrastructureExtensions
                 CamundaOptions.SectionName));
 
         services.AddHttpClient<
+            IWorkflowProcessReader,
+            CamundaWorkflowProcessReader>(
+            (serviceProvider, client) =>
+            {
+                var options =
+                    serviceProvider
+                        .GetRequiredService<IOptions<CamundaOptions>>()
+                        .Value;
+
+                client.BaseAddress =
+                    new Uri(options.BaseUrl);
+            });
+
+
+        services.AddHttpClient<
+            IWorkflowVariableReader,
+            CamundaWorkflowVariableReader>(
+            (serviceProvider, client) =>
+            {
+                var options =
+                    serviceProvider
+                        .GetRequiredService<IOptions<CamundaOptions>>()
+                        .Value;
+
+                client.BaseAddress =
+                    new Uri(options.BaseUrl);
+            });
+            
+        services.AddHttpClient<
             IPurchaseRequestWorkflowStarter,
             CamundaPurchaseRequestWorkflowStarter>(
             (serviceProvider, client) =>
@@ -77,6 +106,20 @@ public static class ProcurementInfrastructureExtensions
                     .Value;
 
                 client.BaseAddress = new Uri(options.BaseUrl);
+            });
+
+        services.AddHttpClient<
+            IWorkflowTaskCompleter,
+            CamundaWorkflowTaskCompleter>(
+            (serviceProvider, client) =>
+            {
+                var options =
+                    serviceProvider
+                        .GetRequiredService<IOptions<CamundaOptions>>()
+                        .Value;
+
+                client.BaseAddress =
+                    new Uri(options.BaseUrl);
             });
 
         services.Configure<OutboxProcessorOptions>(configuration.GetSection(OutboxProcessorOptions.SectionName));

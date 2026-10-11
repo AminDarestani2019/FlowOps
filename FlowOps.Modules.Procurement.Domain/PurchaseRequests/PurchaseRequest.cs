@@ -218,6 +218,88 @@ public sealed class PurchaseRequest
         return Result.Success();
     }
 
+    public Result MarkInApproval()
+    {
+        if (Status != PurchaseRequestStatus.Submitted)
+        {
+            return Result.Failure(
+                PurchaseRequestErrors.InvalidStateTransition);
+        }
+
+        Status = PurchaseRequestStatus.InApproval;
+
+        return Result.Success();
+    }
+
+    public Result Approve(DateTime approvedAtUtc)
+    {
+        if (Status != PurchaseRequestStatus.InApproval)
+        {
+            return Result.Failure(
+                PurchaseRequestErrors.InvalidStateTransition);
+        }
+
+        Status = PurchaseRequestStatus.Approved;
+
+        RaiseDomainEvent(
+            new PurchaseRequestApprovedDomainEvent(
+                Id,
+                approvedAtUtc));
+
+        return Result.Success();
+    }
+
+public Result ApproveStep(
+    PurchaseRequestApprovalStage stage,
+    bool isFinalApproval,
+    DateTime approvedAtUtc)
+{
+    if (Status != PurchaseRequestStatus.InApproval)
+    {
+        return Result.Failure(
+            PurchaseRequestErrors.InvalidStateTransition);
+    }
+
+    RaiseDomainEvent(
+        new PurchaseRequestApprovalStepApprovedDomainEvent(
+            Id,
+            stage,
+            isFinalApproval,
+            approvedAtUtc));
+
+    if (!isFinalApproval)
+    {
+        return Result.Success();
+    }
+
+    Status = PurchaseRequestStatus.Approved;
+
+    RaiseDomainEvent(
+        new PurchaseRequestApprovedDomainEvent(
+            Id,
+            approvedAtUtc));
+
+    return Result.Success();
+}
+
+    public Result Reject(DateTime rejectedAtUtc)
+    {
+        if (Status != PurchaseRequestStatus.InApproval)
+        {
+            return Result.Failure(
+                PurchaseRequestErrors.InvalidStateTransition);
+        }
+
+        Status = PurchaseRequestStatus.Rejected;
+
+        RaiseDomainEvent(
+            new PurchaseRequestRejectedDomainEvent(
+                Id,
+                rejectedAtUtc));
+
+        return Result.Success();
+    }
+
     private Result EnsureDraft()
     {
         return Status == PurchaseRequestStatus.Draft

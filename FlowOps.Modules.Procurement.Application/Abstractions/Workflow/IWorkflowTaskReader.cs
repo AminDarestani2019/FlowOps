@@ -8,4 +8,8 @@ public interface IWorkflowTaskReader
     Task<WorkflowTask?> GetTaskAsync(
         string taskKey,
         CancellationToken cancellationToken = default);
+
+    Task<WorkflowTask?> GetActiveTaskForProcessAsync(
+        string processInstanceKey,
+        CancellationToken cancellationToken = default);
 }

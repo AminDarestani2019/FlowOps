@@ -16,6 +16,9 @@ internal sealed class CamundaUserTaskDto
     [JsonPropertyName("name")]
     public string Name { get; init; } = string.Empty;
 
+    [JsonPropertyName("elementId")]
+    public string ElementId { get; init; } = string.Empty;
+
     [JsonPropertyName("state")]
     public string State { get; init; } = string.Empty;
 

@@ -63,4 +63,48 @@ internal static class PurchaseRequestTestData
 
         return moneyResult.Value;
     }
+
+    public static PurchaseRequest CreateSubmitted()
+    {
+        var request = CreateDraft();
+
+        var money =
+            CreateMoney(1500m);
+
+        var addResult =
+            request.AddItem(
+                "Development Laptop",
+                1,
+                money);
+
+        Assert.True(addResult.IsSuccess);
+
+        var submitResult =
+            request.Submit(
+                new DateTime(
+                    2026,
+                    10,
+                    10,
+                    8,
+                    0,
+                    0,
+                    DateTimeKind.Utc));
+
+        Assert.True(submitResult.IsSuccess);
+
+        return request;
+    }
+
+    public static PurchaseRequest CreateInApproval()
+    {
+        var request =
+            CreateSubmitted();
+
+        var result =
+            request.MarkInApproval();
+
+        Assert.True(result.IsSuccess);
+
+        return request;
+    }
 }

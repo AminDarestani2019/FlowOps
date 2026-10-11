@@ -9,11 +9,11 @@ public static class GetMyTasksEndpoint
         app.MapGet(
             "/api/workflow/tasks",
             async (
-                GetMyTasksHandler handler,
+                Handler handler,
                 CancellationToken cancellationToken) =>
             {
                 var result = await handler.HandleAsync(
-                    new GetMyTasksQuery(),
+                    new Query(),
                     cancellationToken);
 
                 return Results.Ok(result);
