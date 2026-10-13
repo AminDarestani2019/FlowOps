@@ -16,6 +16,16 @@ internal sealed class CamundaJobWorker(
     private const string NotifyRequesterJobType =
         "flowops.procurement.notify-requester";
 
+    private const string StandardFollowUpJobType =
+        "flowops.procurement.standard-follow-up";
+
+    private const string FinanceFollowUpJobType =
+        "flowops.procurement.finance-follow-up";
+
+    private const string ExecutiveFollowUpJobType =
+        "flowops.procurement.executive-follow-up";
+
+
     private readonly CamundaJobWorkerOptions _options =
         options.Value;
 
@@ -35,6 +45,21 @@ internal sealed class CamundaJobWorker(
             RunWorkerLoopAsync(
                 NotifyRequesterJobType,
                 HandleNotifyRequesterAsync,
+                stoppingToken),
+
+            RunWorkerLoopAsync(
+                StandardFollowUpJobType,
+                HandleStandardFollowUpAsync,
+                stoppingToken),
+
+            RunWorkerLoopAsync(
+                FinanceFollowUpJobType,
+                HandleFinanceFollowUpAsync,
+                stoppingToken),
+
+            RunWorkerLoopAsync(
+                ExecutiveFollowUpJobType,
+                HandleExecutiveFollowUpAsync,
                 stoppingToken));
     }
 
@@ -151,6 +176,42 @@ internal sealed class CamundaJobWorker(
     {
         logger.LogInformation(
             "Requester notification simulated. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}",
+            job.ProcessInstanceKey,
+            job.ElementId);
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleStandardFollowUpAsync(
+        CamundaActivatedJobDto job,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Standard follow-up executed. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}",
+            job.ProcessInstanceKey,
+            job.ElementId);
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleFinanceFollowUpAsync(
+        CamundaActivatedJobDto job,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Finance follow-up executed. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}",
+            job.ProcessInstanceKey,
+            job.ElementId);
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleExecutiveFollowUpAsync(
+        CamundaActivatedJobDto job,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Executive follow-up executed. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}",
             job.ProcessInstanceKey,
             job.ElementId);
 
