@@ -1,754 +1,391 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<bpmn:definitions
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-    xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
-    id="Definitions_PurchaseRequestApproval"
-    targetNamespace="http://flowops.local/procurement">
-
-  <bpmn:process
-      id="purchase-request-approval"
-      name="Purchase Request Approval"
-      isExecutable="true">
-
-    <!-- ================================================= -->
-    <!-- START                                             -->
-    <!-- ================================================= -->
-
-    <bpmn:startEvent
-        id="StartEvent_Submitted"
-        name="Purchase Request Submitted">
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_PurchaseRequestApproval" targetNamespace="http://flowops.local/procurement" exporter="Camunda Modeler" exporterVersion="5.49.0">
+  <bpmn:process id="purchase-request-approval" name="Purchase Request Approval" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Submitted" name="Purchase Request Submitted">
       <bpmn:outgoing>Flow_Start_To_ApprovalPolicy</bpmn:outgoing>
     </bpmn:startEvent>
-
-    <!-- ================================================= -->
-    <!-- DMN                                               -->
-    <!-- ================================================= -->
-
-    <bpmn:businessRuleTask
-        id="BusinessRuleTask_DetermineApprovalLevel"
-        name="Determine Approval Level">
-
+    <bpmn:businessRuleTask id="BusinessRuleTask_DetermineApprovalLevel" name="Determine Approval Level">
       <bpmn:extensionElements>
-        <zeebe:calledDecision
-            decisionId="approvalLevel"
-            bindingType="deployment"
-            resultVariable="approvalLevel" />
+        <zeebe:calledDecision decisionId="approvalLevel" resultVariable="approvalLevel" bindingType="deployment" />
       </bpmn:extensionElements>
-
       <bpmn:incoming>Flow_Start_To_ApprovalPolicy</bpmn:incoming>
       <bpmn:outgoing>Flow_ApprovalPolicy_To_Manager</bpmn:outgoing>
-
     </bpmn:businessRuleTask>
-
-    <!-- ================================================= -->
-    <!-- MANAGER                                           -->
-    <!-- ================================================= -->
-
-    <bpmn:userTask
-        id="UserTask_ManagerApproval"
-        name="Manager Approval">
-
+    <bpmn:userTask id="UserTask_ManagerApproval" name="Manager Approval">
       <bpmn:extensionElements>
         <zeebe:userTask />
       </bpmn:extensionElements>
-
       <bpmn:incoming>Flow_ApprovalPolicy_To_Manager</bpmn:incoming>
       <bpmn:outgoing>Flow_Manager_To_Decision</bpmn:outgoing>
-
     </bpmn:userTask>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_ManagerDecision"
-        name="Manager Decision">
-
+    <bpmn:exclusiveGateway id="Gateway_ManagerDecision" name="Manager Decision">
       <bpmn:incoming>Flow_Manager_To_Decision</bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_ManagerDecision_To_Rejected
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_ManagerDecision_To_Routing
-      </bpmn:outgoing>
-
     </bpmn:exclusiveGateway>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_AfterManager"
-        name="Approval Level Routing">
-
-      <bpmn:incoming>
-        Flow_ManagerDecision_To_Routing
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_ManagerRoute_Manager_To_Procurement
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_ManagerRoute_ManagerFinance_To_Finance
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_ManagerRoute_ManagerFinanceDirector_To_Finance
-      </bpmn:outgoing>
-
-    </bpmn:exclusiveGateway>
-
-    <!-- ================================================= -->
-    <!-- FINANCE                                           -->
-    <!-- ================================================= -->
-
-    <bpmn:userTask
-        id="UserTask_FinanceApproval"
-        name="Finance Approval">
-
+    <bpmn:exclusiveGateway id="Gateway_AfterManager" name="Approval Level Routing" />
+    <bpmn:userTask id="UserTask_FinanceApproval" name="Finance Approval">
       <bpmn:extensionElements>
         <zeebe:userTask />
       </bpmn:extensionElements>
-
-      <bpmn:incoming>
-        Flow_ManagerRoute_ManagerFinance_To_Finance
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_ManagerRoute_ManagerFinanceDirector_To_Finance
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_Finance_To_Decision
-      </bpmn:outgoing>
-
     </bpmn:userTask>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_FinanceDecision"
-        name="Finance Decision">
-
-      <bpmn:incoming>
-        Flow_Finance_To_Decision
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_FinanceDecision_To_Rejected
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_FinanceDecision_To_Routing
-      </bpmn:outgoing>
-
-    </bpmn:exclusiveGateway>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_AfterFinance"
-        name="Finance Routing">
-
-      <bpmn:incoming>
-        Flow_FinanceDecision_To_Routing
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_FinanceRoute_ManagerFinance_To_Procurement
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_FinanceRoute_ManagerFinanceDirector_To_Director
-      </bpmn:outgoing>
-
-    </bpmn:exclusiveGateway>
-
-    <!-- ================================================= -->
-    <!-- DIRECTOR                                          -->
-    <!-- ================================================= -->
-
-    <bpmn:userTask
-        id="UserTask_DirectorApproval"
-        name="Director Approval">
-
+    <bpmn:exclusiveGateway id="Gateway_FinanceDecision" name="Finance Decision" />
+    <bpmn:exclusiveGateway id="Gateway_AfterFinance" name="Finance Routing" />
+    <bpmn:userTask id="UserTask_DirectorApproval" name="Director Approval">
       <bpmn:extensionElements>
         <zeebe:userTask />
       </bpmn:extensionElements>
-
-      <bpmn:incoming>
-        Flow_FinanceRoute_ManagerFinanceDirector_To_Director
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_Director_To_Decision
-      </bpmn:outgoing>
-
     </bpmn:userTask>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_DirectorDecision"
-        name="Director Decision">
-
-      <bpmn:incoming>
-        Flow_Director_To_Decision
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_DirectorDecision_To_Rejected
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_DirectorDecision_To_Procurement
-      </bpmn:outgoing>
-
-    </bpmn:exclusiveGateway>
-
-    <!-- ================================================= -->
-    <!-- PROCUREMENT                                       -->
-    <!-- ================================================= -->
-
-    <bpmn:userTask
-        id="UserTask_ProcurementApproval"
-        name="Procurement Approval">
-
+    <bpmn:exclusiveGateway id="Gateway_DirectorDecision" name="Director Decision" />
+    <bpmn:userTask id="UserTask_ProcurementApproval" name="Procurement Approval">
       <bpmn:extensionElements>
         <zeebe:userTask />
       </bpmn:extensionElements>
-
-      <bpmn:incoming>
-        Flow_ManagerRoute_Manager_To_Procurement
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_FinanceRoute_ManagerFinance_To_Procurement
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_DirectorDecision_To_Procurement
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_Procurement_To_Decision
-      </bpmn:outgoing>
-
     </bpmn:userTask>
-
-    <bpmn:exclusiveGateway
-        id="Gateway_ProcurementDecision"
-        name="Procurement Decision">
-
-      <bpmn:incoming>
-        Flow_Procurement_To_Decision
-      </bpmn:incoming>
-
-      <bpmn:outgoing>
-        Flow_ProcurementDecision_To_Approved
-      </bpmn:outgoing>
-
-      <bpmn:outgoing>
-        Flow_ProcurementDecision_To_Rejected
-      </bpmn:outgoing>
-
+    <bpmn:exclusiveGateway id="Gateway_ProcurementDecision" name="Procurement Decision">
+      <bpmn:outgoing>Flow_1kosa19</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- ================================================= -->
-    <!-- END EVENTS                                        -->
-    <!-- ================================================= -->
-
-    <bpmn:endEvent
-        id="EndEvent_Approved"
-        name="Approved">
-
-      <bpmn:incoming>
-        Flow_ProcurementDecision_To_Approved
-      </bpmn:incoming>
-
+    <bpmn:endEvent id="EndEvent_Approved" name="Approved">
+      <bpmn:incoming>Flow_0j8usxb</bpmn:incoming>
     </bpmn:endEvent>
-
-    <bpmn:endEvent
-        id="EndEvent_Rejected"
-        name="Rejected">
-
-      <bpmn:incoming>
-        Flow_ManagerDecision_To_Rejected
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_FinanceDecision_To_Rejected
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_DirectorDecision_To_Rejected
-      </bpmn:incoming>
-
-      <bpmn:incoming>
-        Flow_ProcurementDecision_To_Rejected
-      </bpmn:incoming>
-
-    </bpmn:endEvent>
-
-    <!-- ================================================= -->
-    <!-- SEQUENCE FLOWS                                    -->
-    <!-- ================================================= -->
-
-    <bpmn:sequenceFlow
-        id="Flow_Start_To_ApprovalPolicy"
-        sourceRef="StartEvent_Submitted"
-        targetRef="BusinessRuleTask_DetermineApprovalLevel" />
-
-    <bpmn:sequenceFlow
-        id="Flow_ApprovalPolicy_To_Manager"
-        sourceRef="BusinessRuleTask_DetermineApprovalLevel"
-        targetRef="UserTask_ManagerApproval" />
-
-    <!-- Manager -->
-
-    <bpmn:sequenceFlow
-        id="Flow_Manager_To_Decision"
-        sourceRef="UserTask_ManagerApproval"
-        targetRef="Gateway_ManagerDecision" />
-
-    <bpmn:sequenceFlow
-        id="Flow_ManagerDecision_To_Rejected"
-        name="Rejected"
-        sourceRef="Gateway_ManagerDecision"
-        targetRef="EndEvent_Rejected">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:endEvent id="EndEvent_Rejected" name="Rejected" />
+    <bpmn:sequenceFlow id="Flow_Start_To_ApprovalPolicy" sourceRef="StartEvent_Submitted" targetRef="BusinessRuleTask_DetermineApprovalLevel" />
+    <bpmn:sequenceFlow id="Flow_ApprovalPolicy_To_Manager" sourceRef="BusinessRuleTask_DetermineApprovalLevel" targetRef="UserTask_ManagerApproval" />
+    <bpmn:sequenceFlow id="Flow_Manager_To_Decision" sourceRef="UserTask_ManagerApproval" targetRef="Gateway_ManagerDecision" />
+    <bpmn:sequenceFlow id="Flow_ManagerDecision_To_Rejected" name="Rejected" sourceRef="Gateway_ManagerDecision" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "rejected"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_ManagerDecision_To_Routing"
-        name="Approved"
-        sourceRef="Gateway_ManagerDecision"
-        targetRef="Gateway_AfterManager">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_ManagerDecision_To_Routing" name="Approved" sourceRef="Gateway_ManagerDecision" targetRef="Gateway_AfterManager">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "approved"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <!-- After Manager -->
-
-    <bpmn:sequenceFlow
-        id="Flow_ManagerRoute_Manager_To_Procurement"
-        name="Manager Only"
-        sourceRef="Gateway_AfterManager"
-        targetRef="UserTask_ProcurementApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_ManagerRoute_Manager_To_Procurement" name="Manager Only" sourceRef="Gateway_AfterManager" targetRef="UserTask_ProcurementApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = approvalLevel = "MANAGER"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_ManagerRoute_ManagerFinance_To_Finance"
-        name="Manager + Finance"
-        sourceRef="Gateway_AfterManager"
-        targetRef="UserTask_FinanceApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_ManagerRoute_ManagerFinance_To_Finance" name="Manager + Finance" sourceRef="Gateway_AfterManager" targetRef="UserTask_FinanceApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = approvalLevel = "MANAGER_FINANCE"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance"
-        name="Manager + Finance + Director"
-        sourceRef="Gateway_AfterManager"
-        targetRef="UserTask_FinanceApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance" name="Manager + Finance + Director" sourceRef="Gateway_AfterManager" targetRef="UserTask_FinanceApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = approvalLevel = "MANAGER_FINANCE_DIRECTOR"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <!-- Finance -->
-
-    <bpmn:sequenceFlow
-        id="Flow_Finance_To_Decision"
-        sourceRef="UserTask_FinanceApproval"
-        targetRef="Gateway_FinanceDecision" />
-
-    <bpmn:sequenceFlow
-        id="Flow_FinanceDecision_To_Rejected"
-        name="Rejected"
-        sourceRef="Gateway_FinanceDecision"
-        targetRef="EndEvent_Rejected">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_Finance_To_Decision" sourceRef="UserTask_FinanceApproval" targetRef="Gateway_FinanceDecision" />
+    <bpmn:sequenceFlow id="Flow_FinanceDecision_To_Rejected" name="Rejected" sourceRef="Gateway_FinanceDecision" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "rejected"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_FinanceDecision_To_Routing"
-        name="Approved"
-        sourceRef="Gateway_FinanceDecision"
-        targetRef="Gateway_AfterFinance">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_FinanceDecision_To_Routing" name="Approved" sourceRef="Gateway_FinanceDecision" targetRef="Gateway_AfterFinance">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "approved"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_FinanceRoute_ManagerFinance_To_Procurement"
-        name="Procurement Next"
-        sourceRef="Gateway_AfterFinance"
-        targetRef="UserTask_ProcurementApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_FinanceRoute_ManagerFinance_To_Procurement" name="Procurement Next" sourceRef="Gateway_AfterFinance" targetRef="UserTask_ProcurementApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = approvalLevel = "MANAGER_FINANCE"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_FinanceRoute_ManagerFinanceDirector_To_Director"
-        name="Director Next"
-        sourceRef="Gateway_AfterFinance"
-        targetRef="UserTask_DirectorApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_FinanceRoute_ManagerFinanceDirector_To_Director" name="Director Next" sourceRef="Gateway_AfterFinance" targetRef="UserTask_DirectorApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = approvalLevel = "MANAGER_FINANCE_DIRECTOR"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <!-- Director -->
-
-    <bpmn:sequenceFlow
-        id="Flow_Director_To_Decision"
-        sourceRef="UserTask_DirectorApproval"
-        targetRef="Gateway_DirectorDecision" />
-
-    <bpmn:sequenceFlow
-        id="Flow_DirectorDecision_To_Rejected"
-        name="Rejected"
-        sourceRef="Gateway_DirectorDecision"
-        targetRef="EndEvent_Rejected">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_Director_To_Decision" sourceRef="UserTask_DirectorApproval" targetRef="Gateway_DirectorDecision" />
+    <bpmn:sequenceFlow id="Flow_DirectorDecision_To_Rejected" name="Rejected" sourceRef="Gateway_DirectorDecision" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "rejected"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_DirectorDecision_To_Procurement"
-        name="Approved"
-        sourceRef="Gateway_DirectorDecision"
-        targetRef="UserTask_ProcurementApproval">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_DirectorDecision_To_Procurement" name="Approved" sourceRef="Gateway_DirectorDecision" targetRef="UserTask_ProcurementApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "approved"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
-    <!-- Procurement -->
-
-    <bpmn:sequenceFlow
-        id="Flow_Procurement_To_Decision"
-        sourceRef="UserTask_ProcurementApproval"
-        targetRef="Gateway_ProcurementDecision" />
-
-    <bpmn:sequenceFlow
-        id="Flow_ProcurementDecision_To_Approved"
-        name="Approved"
-        sourceRef="Gateway_ProcurementDecision"
-        targetRef="EndEvent_Approved">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
-        = decision = "approved"
-      </bpmn:conditionExpression>
-
-    </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow
-        id="Flow_ProcurementDecision_To_Rejected"
-        name="Rejected"
-        sourceRef="Gateway_ProcurementDecision"
-        targetRef="EndEvent_Rejected">
-
-      <bpmn:conditionExpression
-          xsi:type="bpmn:tFormalExpression">
+    <bpmn:sequenceFlow id="Flow_Procurement_To_Decision" sourceRef="UserTask_ProcurementApproval" targetRef="Gateway_ProcurementDecision" />
+    <bpmn:sequenceFlow id="Flow_ProcurementDecision_To_Rejected" name="Rejected" sourceRef="Gateway_ProcurementDecision" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
         = decision = "rejected"
       </bpmn:conditionExpression>
-
     </bpmn:sequenceFlow>
-
+    <bpmn:parallelGateway id="Gateway_PostApprovalFork" name="Post Approval Fork">
+      <bpmn:incoming>Flow_1kosa19</bpmn:incoming>
+      <bpmn:outgoing>Flow_1at9bu9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0nqxk53</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_1at9bu9" sourceRef="Gateway_PostApprovalFork" targetRef="ServiceTask_RecordApprovalAudit" />
+    <bpmn:serviceTask id="ServiceTask_RecordApprovalAudit" name="Record Approval Audit">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.record-approval-audit" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1at9bu9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0epvs32</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0nqxk53" sourceRef="Gateway_PostApprovalFork" targetRef="ServiceTask_NotifyRequester" />
+    <bpmn:serviceTask id="ServiceTask_NotifyRequester" name="Notify Requester">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.notify-requester" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0nqxk53</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ska552</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="Gateway_PostApprovalJoin" name="Post Approval Join">
+      <bpmn:incoming>Flow_0ska552</bpmn:incoming>
+      <bpmn:incoming>Flow_0epvs32</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j8usxb</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0ska552" sourceRef="ServiceTask_NotifyRequester" targetRef="Gateway_PostApprovalJoin" />
+    <bpmn:sequenceFlow id="Flow_0epvs32" sourceRef="ServiceTask_RecordApprovalAudit" targetRef="Gateway_PostApprovalJoin" />
+    <bpmn:sequenceFlow id="Flow_0j8usxb" sourceRef="Gateway_PostApprovalJoin" targetRef="EndEvent_Approved" />
+    <bpmn:sequenceFlow id="Flow_1kosa19" name="Approved" sourceRef="Gateway_ProcurementDecision" targetRef="Gateway_PostApprovalFork">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=decision = "approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
   </bpmn:process>
-
-  <!-- =================================================== -->
-  <!-- DIAGRAM                                             -->
-  <!-- =================================================== -->
-
-  <bpmndi:BPMNDiagram
-      id="BPMNDiagram_PurchaseRequestApproval">
-
-    <bpmndi:BPMNPlane
-        id="BPMNPlane_PurchaseRequestApproval"
-        bpmnElement="purchase-request-approval">
-
-      <bpmndi:BPMNShape
-          id="Shape_StartEvent_Submitted"
-          bpmnElement="StartEvent_Submitted">
-        <dc:Bounds x="80" y="272" width="36" height="36" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PurchaseRequestApproval">
+    <bpmndi:BPMNPlane id="BPMNPlane_PurchaseRequestApproval" bpmnElement="purchase-request-approval">
+      <bpmndi:BPMNShape id="Shape_StartEvent_Submitted" bpmnElement="StartEvent_Submitted">
+        <dc:Bounds x="160" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="153" y="328" width="50" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_BusinessRuleTask_DetermineApprovalLevel"
-          bpmnElement="BusinessRuleTask_DetermineApprovalLevel">
-        <dc:Bounds x="160" y="250" width="140" height="80" />
+      <bpmndi:BPMNShape id="Shape_BusinessRuleTask_DetermineApprovalLevel" bpmnElement="BusinessRuleTask_DetermineApprovalLevel">
+        <dc:Bounds x="240" y="270" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_UserTask_ManagerApproval"
-          bpmnElement="UserTask_ManagerApproval">
-        <dc:Bounds x="350" y="250" width="120" height="80" />
+      <bpmndi:BPMNShape id="Shape_UserTask_ManagerApproval" bpmnElement="UserTask_ManagerApproval">
+        <dc:Bounds x="430" y="270" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_ManagerDecision"
-          bpmnElement="Gateway_ManagerDecision"
-          isMarkerVisible="true">
-        <dc:Bounds x="520" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_ManagerDecision" bpmnElement="Gateway_ManagerDecision" isMarkerVisible="true">
+        <dc:Bounds x="600" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="581" y="335" width="89" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_AfterManager"
-          bpmnElement="Gateway_AfterManager"
-          isMarkerVisible="true">
-        <dc:Bounds x="620" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_AfterManager" bpmnElement="Gateway_AfterManager" isMarkerVisible="true">
+        <dc:Bounds x="700" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="689" y="335" width="73" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_UserTask_FinanceApproval"
-          bpmnElement="UserTask_FinanceApproval">
-        <dc:Bounds x="730" y="250" width="120" height="80" />
+      <bpmndi:BPMNShape id="Shape_UserTask_FinanceApproval" bpmnElement="UserTask_FinanceApproval">
+        <dc:Bounds x="810" y="270" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_FinanceDecision"
-          bpmnElement="Gateway_FinanceDecision"
-          isMarkerVisible="true">
-        <dc:Bounds x="900" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_FinanceDecision" bpmnElement="Gateway_FinanceDecision" isMarkerVisible="true">
+        <dc:Bounds x="980" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="963" y="335" width="85" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_AfterFinance"
-          bpmnElement="Gateway_AfterFinance"
-          isMarkerVisible="true">
-        <dc:Bounds x="1000" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_AfterFinance" bpmnElement="Gateway_AfterFinance" isMarkerVisible="true">
+        <dc:Bounds x="1080" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1065" y="335" width="81" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_UserTask_DirectorApproval"
-          bpmnElement="UserTask_DirectorApproval">
-        <dc:Bounds x="1110" y="250" width="120" height="80" />
+      <bpmndi:BPMNShape id="Shape_UserTask_DirectorApproval" bpmnElement="UserTask_DirectorApproval">
+        <dc:Bounds x="1190" y="270" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_DirectorDecision"
-          bpmnElement="Gateway_DirectorDecision"
-          isMarkerVisible="true">
-        <dc:Bounds x="1280" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_DirectorDecision" bpmnElement="Gateway_DirectorDecision" isMarkerVisible="true">
+        <dc:Bounds x="1360" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1343" y="335" width="84" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_UserTask_ProcurementApproval"
-          bpmnElement="UserTask_ProcurementApproval">
-        <dc:Bounds x="1390" y="250" width="130" height="80" />
+      <bpmndi:BPMNShape id="Shape_UserTask_ProcurementApproval" bpmnElement="UserTask_ProcurementApproval">
+        <dc:Bounds x="1470" y="270" width="130" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_Gateway_ProcurementDecision"
-          bpmnElement="Gateway_ProcurementDecision"
-          isMarkerVisible="true">
-        <dc:Bounds x="1570" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Shape_Gateway_ProcurementDecision" bpmnElement="Gateway_ProcurementDecision" isMarkerVisible="true">
+        <dc:Bounds x="1650" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1643" y="247.5" width="63" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_EndEvent_Approved"
-          bpmnElement="EndEvent_Approved">
-        <dc:Bounds x="1690" y="272" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_EndEvent_Rejected" bpmnElement="EndEvent_Rejected">
+        <dc:Bounds x="1170" y="490" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1166" y="526" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape
-          id="Shape_EndEvent_Rejected"
-          bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1090" y="470" width="36" height="36" />
+      <bpmndi:BPMNShape id="Gateway_1lw32pb_di" bpmnElement="Gateway_PostApprovalFork">
+        <dc:Bounds x="1825" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1885" y="296.5" width="69" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_Start_To_ApprovalPolicy"
-          bpmnElement="Flow_Start_To_ApprovalPolicy">
-        <di:waypoint x="116" y="290" />
-        <di:waypoint x="160" y="290" />
+      <bpmndi:BPMNShape id="Activity_0frrria_di" bpmnElement="ServiceTask_RecordApprovalAudit">
+        <dc:Bounds x="1970" y="420" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Approved" bpmnElement="EndEvent_Approved">
+        <dc:Bounds x="2362" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2356" y="328" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1nv0gmy_di" bpmnElement="Gateway_PostApprovalJoin">
+        <dc:Bounds x="2185" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2105.5" y="296" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jwndrg_di" bpmnElement="ServiceTask_NotifyRequester">
+        <dc:Bounds x="1970" y="110" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Start_To_ApprovalPolicy" bpmnElement="Flow_Start_To_ApprovalPolicy">
+        <di:waypoint x="196" y="310" />
+        <di:waypoint x="240" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ApprovalPolicy_To_Manager"
-          bpmnElement="Flow_ApprovalPolicy_To_Manager">
-        <di:waypoint x="300" y="290" />
-        <di:waypoint x="350" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ApprovalPolicy_To_Manager" bpmnElement="Flow_ApprovalPolicy_To_Manager">
+        <di:waypoint x="380" y="310" />
+        <di:waypoint x="430" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_Manager_To_Decision"
-          bpmnElement="Flow_Manager_To_Decision">
-        <di:waypoint x="470" y="290" />
-        <di:waypoint x="520" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_Manager_To_Decision" bpmnElement="Flow_Manager_To_Decision">
+        <di:waypoint x="550" y="310" />
+        <di:waypoint x="600" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ManagerDecision_To_Routing"
-          bpmnElement="Flow_ManagerDecision_To_Routing">
-        <di:waypoint x="570" y="290" />
-        <di:waypoint x="620" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Rejected" bpmnElement="Flow_ManagerDecision_To_Rejected">
+        <di:waypoint x="625" y="335" />
+        <di:waypoint x="625" y="508" />
+        <di:waypoint x="1170" y="508" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="412" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ManagerRoute_Manager_To_Procurement"
-          bpmnElement="Flow_ManagerRoute_Manager_To_Procurement">
-        <di:waypoint x="645" y="265" />
-        <di:waypoint x="645" y="200" />
-        <di:waypoint x="1455" y="200" />
-        <di:waypoint x="1455" y="250" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Routing" bpmnElement="Flow_ManagerDecision_To_Routing">
+        <di:waypoint x="650" y="310" />
+        <di:waypoint x="700" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="651" y="285" width="48" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ManagerRoute_ManagerFinance_To_Finance"
-          bpmnElement="Flow_ManagerRoute_ManagerFinance_To_Finance">
-        <di:waypoint x="670" y="290" />
-        <di:waypoint x="730" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_Manager_To_Procurement" bpmnElement="Flow_ManagerRoute_Manager_To_Procurement">
+        <di:waypoint x="725" y="285" />
+        <di:waypoint x="725" y="220" />
+        <di:waypoint x="1535" y="220" />
+        <di:waypoint x="1535" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1095" y="195" width="70" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ManagerRoute_ManagerFinanceDirector_To_Finance"
-          bpmnElement="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance">
-        <di:waypoint x="645" y="315" />
-        <di:waypoint x="645" y="350" />
-        <di:waypoint x="790" y="350" />
-        <di:waypoint x="790" y="330" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinance_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinance_To_Finance">
+        <di:waypoint x="750" y="310" />
+        <di:waypoint x="810" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="754" y="285" width="53" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_Finance_To_Decision"
-          bpmnElement="Flow_Finance_To_Decision">
-        <di:waypoint x="850" y="290" />
-        <di:waypoint x="900" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinanceDirector_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance">
+        <di:waypoint x="725" y="335" />
+        <di:waypoint x="725" y="370" />
+        <di:waypoint x="870" y="370" />
+        <di:waypoint x="870" y="350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="771" y="345" width="53" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_FinanceDecision_To_Routing"
-          bpmnElement="Flow_FinanceDecision_To_Routing">
-        <di:waypoint x="950" y="290" />
-        <di:waypoint x="1000" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_Finance_To_Decision" bpmnElement="Flow_Finance_To_Decision">
+        <di:waypoint x="930" y="310" />
+        <di:waypoint x="980" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_FinanceRoute_ManagerFinance_To_Procurement"
-          bpmnElement="Flow_FinanceRoute_ManagerFinance_To_Procurement">
-        <di:waypoint x="1025" y="265" />
-        <di:waypoint x="1025" y="200" />
-        <di:waypoint x="1455" y="200" />
-        <di:waypoint x="1455" y="250" />
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Rejected" bpmnElement="Flow_FinanceDecision_To_Rejected">
+        <di:waypoint x="1005" y="335" />
+        <di:waypoint x="1005" y="508" />
+        <di:waypoint x="1170" y="508" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="998" y="412" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_FinanceRoute_ManagerFinanceDirector_To_Director"
-          bpmnElement="Flow_FinanceRoute_ManagerFinanceDirector_To_Director">
-        <di:waypoint x="1050" y="290" />
-        <di:waypoint x="1110" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Routing" bpmnElement="Flow_FinanceDecision_To_Routing">
+        <di:waypoint x="1030" y="310" />
+        <di:waypoint x="1080" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1031" y="285" width="48" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_Director_To_Decision"
-          bpmnElement="Flow_Director_To_Decision">
-        <di:waypoint x="1230" y="290" />
-        <di:waypoint x="1280" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinance_To_Procurement" bpmnElement="Flow_FinanceRoute_ManagerFinance_To_Procurement">
+        <di:waypoint x="1105" y="285" />
+        <di:waypoint x="1105" y="220" />
+        <di:waypoint x="1535" y="220" />
+        <di:waypoint x="1535" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1276" y="195" width="89" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_DirectorDecision_To_Procurement"
-          bpmnElement="Flow_DirectorDecision_To_Procurement">
-        <di:waypoint x="1330" y="290" />
-        <di:waypoint x="1390" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinanceDirector_To_Director" bpmnElement="Flow_FinanceRoute_ManagerFinanceDirector_To_Director">
+        <di:waypoint x="1130" y="310" />
+        <di:waypoint x="1190" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1128" y="285" width="65" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_Procurement_To_Decision"
-          bpmnElement="Flow_Procurement_To_Decision">
-        <di:waypoint x="1520" y="290" />
-        <di:waypoint x="1570" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_Director_To_Decision" bpmnElement="Flow_Director_To_Decision">
+        <di:waypoint x="1310" y="310" />
+        <di:waypoint x="1360" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ProcurementDecision_To_Approved"
-          bpmnElement="Flow_ProcurementDecision_To_Approved">
-        <di:waypoint x="1620" y="290" />
-        <di:waypoint x="1690" y="290" />
+      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Rejected" bpmnElement="Flow_DirectorDecision_To_Rejected">
+        <di:waypoint x="1385" y="335" />
+        <di:waypoint x="1385" y="508" />
+        <di:waypoint x="1206" y="508" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1378" y="412" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Rejection paths -->
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ManagerDecision_To_Rejected"
-          bpmnElement="Flow_ManagerDecision_To_Rejected">
-        <di:waypoint x="545" y="315" />
-        <di:waypoint x="545" y="488" />
-        <di:waypoint x="1090" y="488" />
+      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Procurement" bpmnElement="Flow_DirectorDecision_To_Procurement">
+        <di:waypoint x="1410" y="310" />
+        <di:waypoint x="1470" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1416" y="285" width="48" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_FinanceDecision_To_Rejected"
-          bpmnElement="Flow_FinanceDecision_To_Rejected"> 
-        <di:waypoint x="925" y="315" />
-        <di:waypoint x="925" y="488" />
-        <di:waypoint x="1090" y="488" />
+      <bpmndi:BPMNEdge id="Edge_Flow_Procurement_To_Decision" bpmnElement="Flow_Procurement_To_Decision">
+        <di:waypoint x="1600" y="310" />
+        <di:waypoint x="1650" y="310" />
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_DirectorDecision_To_Rejected"
-          bpmnElement="Flow_DirectorDecision_To_Rejected">
-        <di:waypoint x="1305" y="315" />
-        <di:waypoint x="1305" y="488" />
-        <di:waypoint x="1126" y="488" />
+      <bpmndi:BPMNEdge id="Edge_Flow_ProcurementDecision_To_Rejected" bpmnElement="Flow_ProcurementDecision_To_Rejected">
+        <di:waypoint x="1675" y="335" />
+        <di:waypoint x="1675" y="508" />
+        <di:waypoint x="1206" y="508" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1668" y="412" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge
-          id="Edge_Flow_ProcurementDecision_To_Rejected"
-          bpmnElement="Flow_ProcurementDecision_To_Rejected">
-        <di:waypoint x="1595" y="315" />
-        <di:waypoint x="1595" y="488" />
-        <di:waypoint x="1126" y="488" />
+      <bpmndi:BPMNEdge id="Flow_1at9bu9_di" bpmnElement="Flow_1at9bu9">
+        <di:waypoint x="1850" y="335" />
+        <di:waypoint x="1850" y="460" />
+        <di:waypoint x="1970" y="460" />
       </bpmndi:BPMNEdge>
-
+      <bpmndi:BPMNEdge id="Flow_0nqxk53_di" bpmnElement="Flow_0nqxk53">
+        <di:waypoint x="1850" y="285" />
+        <di:waypoint x="1850" y="150" />
+        <di:waypoint x="1970" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ska552_di" bpmnElement="Flow_0ska552">
+        <di:waypoint x="2070" y="150" />
+        <di:waypoint x="2210" y="150" />
+        <di:waypoint x="2210" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0epvs32_di" bpmnElement="Flow_0epvs32">
+        <di:waypoint x="2070" y="460" />
+        <di:waypoint x="2210" y="460" />
+        <di:waypoint x="2210" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j8usxb_di" bpmnElement="Flow_0j8usxb">
+        <di:waypoint x="2235" y="310" />
+        <di:waypoint x="2362" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kosa19_di" bpmnElement="Flow_1kosa19">
+        <di:waypoint x="1700" y="310" />
+        <di:waypoint x="1825" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1739" y="292" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
-
   </bpmndi:BPMNDiagram>
-
 </bpmn:definitions>
