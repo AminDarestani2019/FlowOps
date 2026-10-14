@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0kco9v9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="purchase-request-follow-up" name="Purchase Request Follow-up" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_FollowUp" name="Follow-up Started">
+      <bpmn:outgoing>Flow_06tikgj</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:inclusiveGateway id="Gateway_FollowUpInclusiveFork" name="Follow-up Routing">
+      <bpmn:incoming>Flow_06tikgj</bpmn:incoming>
+      <bpmn:outgoing>Flow_01nt9sv</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1r3hgug</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04jmmid</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_06tikgj" sourceRef="StartEvent_FollowUp" targetRef="Gateway_FollowUpInclusiveFork" />
+    <bpmn:serviceTask id="ServiceTask_FollowUp_Standard" name="Standard Follow-up">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.standard-follow-up" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_01nt9sv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0b8m451</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_01nt9sv" name="Standard" sourceRef="Gateway_FollowUpInclusiveFork" targetRef="ServiceTask_FollowUp_Standard">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="ServiceTask_FollowUp_Finance" name="Finance Follow-up">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.finance-follow-up" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1r3hgug</bpmn:incoming>
+      <bpmn:outgoing>Flow_030xt7v</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1r3hgug" name="Finance" sourceRef="Gateway_FollowUpInclusiveFork" targetRef="ServiceTask_FollowUp_Finance">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalLevel = "MANAGER_FINANCE" or approvalLevel = "MANAGER_FINANCE_DIRECTOR"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="ServiceTask_FollowUp_Executive" name="Executive Follow-up">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.executive-follow-up" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04jmmid</bpmn:incoming>
+      <bpmn:outgoing>Flow_08vwuz6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_04jmmid" name="Executive" sourceRef="Gateway_FollowUpInclusiveFork" targetRef="ServiceTask_FollowUp_Executive">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalLevel = "MANAGER_FINANCE_DIRECTOR"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:inclusiveGateway id="Gateway_FollowUpInclusiveJoin" name="Follow-up Join">
+      <bpmn:incoming>Flow_08vwuz6</bpmn:incoming>
+      <bpmn:incoming>Flow_0b8m451</bpmn:incoming>
+      <bpmn:incoming>Flow_030xt7v</bpmn:incoming>
+      <bpmn:outgoing>Flow_07nilh5</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_08vwuz6" sourceRef="ServiceTask_FollowUp_Executive" targetRef="Gateway_FollowUpInclusiveJoin" />
+    <bpmn:sequenceFlow id="Flow_0b8m451" sourceRef="ServiceTask_FollowUp_Standard" targetRef="Gateway_FollowUpInclusiveJoin" />
+    <bpmn:sequenceFlow id="Flow_030xt7v" sourceRef="ServiceTask_FollowUp_Finance" targetRef="Gateway_FollowUpInclusiveJoin" />
+    <bpmn:endEvent id="EndEvent_FollowUpCompleted" name="Follow-up Completed">
+      <bpmn:incoming>Flow_07nilh5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_07nilh5" sourceRef="Gateway_FollowUpInclusiveJoin" targetRef="EndEvent_FollowUpCompleted" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="purchase-request-follow-up">
+      <bpmndi:BPMNShape id="Event_1nhibtm_di" bpmnElement="StartEvent_FollowUp">
+        <dc:Bounds x="152" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="127" y="325" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_09xi647_di" bpmnElement="Gateway_FollowUpInclusiveFork">
+        <dc:Bounds x="355" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="335" y="251" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ufpquv_di" bpmnElement="ServiceTask_FollowUp_Standard">
+        <dc:Bounds x="570" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tjoiye_di" bpmnElement="ServiceTask_FollowUp_Finance">
+        <dc:Bounds x="570" y="390" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00eicxc_di" bpmnElement="ServiceTask_FollowUp_Executive">
+        <dc:Bounds x="570" y="120" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1agli0t_di" bpmnElement="Gateway_FollowUpInclusiveJoin">
+        <dc:Bounds x="865" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="924.5" y="282" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fsbqi5_di" bpmnElement="EndEvent_FollowUpCompleted">
+        <dc:Bounds x="1082" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="325" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_06tikgj_di" bpmnElement="Flow_06tikgj">
+        <di:waypoint x="188" y="300" />
+        <di:waypoint x="355" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01nt9sv_di" bpmnElement="Flow_01nt9sv">
+        <di:waypoint x="405" y="300" />
+        <di:waypoint x="570" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="465" y="282" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r3hgug_di" bpmnElement="Flow_1r3hgug">
+        <di:waypoint x="380" y="325" />
+        <di:waypoint x="380" y="430" />
+        <di:waypoint x="570" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="375" y="373.5" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04jmmid_di" bpmnElement="Flow_04jmmid">
+        <di:waypoint x="380" y="275" />
+        <di:waypoint x="380" y="160" />
+        <di:waypoint x="570" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="371" y="212.5" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08vwuz6_di" bpmnElement="Flow_08vwuz6">
+        <di:waypoint x="670" y="160" />
+        <di:waypoint x="890" y="160" />
+        <di:waypoint x="890" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b8m451_di" bpmnElement="Flow_0b8m451">
+        <di:waypoint x="670" y="300" />
+        <di:waypoint x="865" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_030xt7v_di" bpmnElement="Flow_030xt7v">
+        <di:waypoint x="670" y="430" />
+        <di:waypoint x="890" y="430" />
+        <di:waypoint x="890" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07nilh5_di" bpmnElement="Flow_07nilh5">
+        <di:waypoint x="915" y="300" />
+        <di:waypoint x="1082" y="300" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

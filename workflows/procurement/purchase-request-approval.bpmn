@@ -145,59 +145,12 @@
       <bpmn:parallelGateway id="Gateway_SubProcess_PostApprovalJoin" name="Post Approval Join">
         <bpmn:incoming>Flow_1pnabw3</bpmn:incoming>
         <bpmn:incoming>Flow_0j6xrdq</bpmn:incoming>
-        <bpmn:outgoing>Flow_1nxn3qz</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0picc31</bpmn:outgoing>
       </bpmn:parallelGateway>
       <bpmn:sequenceFlow id="Flow_1pnabw3" sourceRef="ServiceTask_SubProcess_RecordApprovalAudit" targetRef="Gateway_SubProcess_PostApprovalJoin" />
-      <bpmn:inclusiveGateway id="Gateway_SubProcess_PostApprovalInclusiveFork" name="Post Approval Follow-up">
-        <bpmn:incoming>Flow_1nxn3qz</bpmn:incoming>
-        <bpmn:outgoing>Flow_0ed7fre</bpmn:outgoing>
-        <bpmn:outgoing>Flow_0nxdwg3</bpmn:outgoing>
-        <bpmn:outgoing>Flow_1i7t2gy</bpmn:outgoing>
-      </bpmn:inclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_1nxn3qz" sourceRef="Gateway_SubProcess_PostApprovalJoin" targetRef="Gateway_SubProcess_PostApprovalInclusiveFork" />
-      <bpmn:serviceTask id="ServiceTask_SubProcess_StandardFollowUp" name="Standard Follow-up">
-        <bpmn:extensionElements>
-          <zeebe:taskDefinition type="flowops.procurement.standard-follow-up" />
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_0ed7fre</bpmn:incoming>
-        <bpmn:outgoing>Flow_0xyhbee</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_0ed7fre" name="Standard" sourceRef="Gateway_SubProcess_PostApprovalInclusiveFork" targetRef="ServiceTask_SubProcess_StandardFollowUp">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:serviceTask id="ServiceTask_SubProcess_FinanceFollowUp" name="Finance Follow-up">
-        <bpmn:extensionElements>
-          <zeebe:taskDefinition type="flowops.procurement.finance-follow-up" />
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_0nxdwg3</bpmn:incoming>
-        <bpmn:outgoing>Flow_13yijdq</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_0nxdwg3" name="Finance" sourceRef="Gateway_SubProcess_PostApprovalInclusiveFork" targetRef="ServiceTask_SubProcess_FinanceFollowUp">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalLevel = "MANAGER_FINANCE" or approvalLevel = "MANAGER_FINANCE_DIRECTOR"</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:serviceTask id="ServiceTask_SubProcess_ExecutiveFollowUp" name="Executive Follow-up">
-        <bpmn:extensionElements>
-          <zeebe:taskDefinition type="flowops.procurement.executive-follow-up" />
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_1i7t2gy</bpmn:incoming>
-        <bpmn:outgoing>Flow_0sp5aix</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_1i7t2gy" name="Executive" sourceRef="Gateway_SubProcess_PostApprovalInclusiveFork" targetRef="ServiceTask_SubProcess_ExecutiveFollowUp">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalLevel = "MANAGER_FINANCE_DIRECTOR"</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_0xyhbee" sourceRef="ServiceTask_SubProcess_StandardFollowUp" targetRef="Gateway_SubProcess_PostApprovalInclusiveJoin" />
-      <bpmn:sequenceFlow id="Flow_0sp5aix" sourceRef="ServiceTask_SubProcess_ExecutiveFollowUp" targetRef="Gateway_SubProcess_PostApprovalInclusiveJoin" />
-      <bpmn:sequenceFlow id="Flow_13yijdq" sourceRef="ServiceTask_SubProcess_FinanceFollowUp" targetRef="Gateway_SubProcess_PostApprovalInclusiveJoin" />
       <bpmn:endEvent id="EndEvent_SubProcess_PostApproval" name="Post Approval Completed">
-        <bpmn:incoming>Flow_1s2pumq</bpmn:incoming>
+        <bpmn:incoming>Flow_1u4yy62</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_1s2pumq" sourceRef="Gateway_SubProcess_PostApprovalInclusiveJoin" targetRef="EndEvent_SubProcess_PostApproval" />
-      <bpmn:inclusiveGateway id="Gateway_SubProcess_PostApprovalInclusiveJoin" name="Post Approval Follow-up Join">
-        <bpmn:incoming>Flow_0xyhbee</bpmn:incoming>
-        <bpmn:incoming>Flow_0sp5aix</bpmn:incoming>
-        <bpmn:incoming>Flow_13yijdq</bpmn:incoming>
-        <bpmn:outgoing>Flow_1s2pumq</bpmn:outgoing>
-      </bpmn:inclusiveGateway>
       <bpmn:intermediateCatchEvent id="IntermediateCatchEvent_RequesterAcknowledged" name="Requester Acknowledged">
         <bpmn:incoming>Flow_099lhii</bpmn:incoming>
         <bpmn:outgoing>Flow_0j6xrdq</bpmn:outgoing>
@@ -205,6 +158,15 @@
       </bpmn:intermediateCatchEvent>
       <bpmn:sequenceFlow id="Flow_099lhii" sourceRef="ServiceTask_SubProcess_NotifyRequester" targetRef="IntermediateCatchEvent_RequesterAcknowledged" />
       <bpmn:sequenceFlow id="Flow_0j6xrdq" sourceRef="IntermediateCatchEvent_RequesterAcknowledged" targetRef="Gateway_SubProcess_PostApprovalJoin" />
+      <bpmn:callActivity id="CallActivity_PostApprovalFollowUp" name="Run Post Approval Follow-up">
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="purchase-request-follow-up" propagateAllChildVariables="false" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0picc31</bpmn:incoming>
+        <bpmn:outgoing>Flow_1u4yy62</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:sequenceFlow id="Flow_0picc31" sourceRef="Gateway_SubProcess_PostApprovalJoin" targetRef="CallActivity_PostApprovalFollowUp" />
+      <bpmn:sequenceFlow id="Flow_1u4yy62" sourceRef="CallActivity_PostApprovalFollowUp" targetRef="EndEvent_SubProcess_PostApproval" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_1if7nxc" name="Approved" sourceRef="Gateway_ProcurementDecision" targetRef="SubProcess_PostApprovalProcessing">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=decision = "approved"</bpmn:conditionExpression>
@@ -296,9 +258,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_EndEvent_Approved" bpmnElement="EndEvent_Approved">
-        <dc:Bounds x="3272" y="437" width="36" height="36" />
+        <dc:Bounds x="3462" y="420" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3266" y="413" width="48" height="14" />
+          <dc:Bounds x="3456" y="396" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0pz1alu_di" bpmnElement="UserTask_ManualNotificationReview">
@@ -306,143 +268,91 @@
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09jp3ww_di" bpmnElement="SubProcess_PostApprovalProcessing" isExpanded="true">
-        <dc:Bounds x="1790" y="210" width="1240" height="456" />
+        <dc:Bounds x="1805" y="220" width="1393" height="490" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1935vgv_di" bpmnElement="StartEvent_PostApproval">
-        <dc:Bounds x="1836" y="442" width="36" height="36" />
+        <dc:Bounds x="1851" y="452" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1820" y="485" width="69" height="27" />
+          <dc:Bounds x="1835" y="495" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_13hhai4_di" bpmnElement="Gateway_SubProcess_PostApprovalFork">
-        <dc:Bounds x="1949" y="435" width="50" height="50" />
+        <dc:Bounds x="1964" y="445" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2009" y="446" width="69" height="27" />
+          <dc:Bounds x="2024" y="456" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fr5tct_di" bpmnElement="ServiceTask_SubProcess_NotifyRequester">
-        <dc:Bounds x="2064" y="280" width="100" height="80" />
+        <dc:Bounds x="2079" y="290" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1nzoi1z_di" bpmnElement="ServiceTask_SubProcess_RecordApprovalAudit">
-        <dc:Bounds x="2054" y="560" width="100" height="80" />
+        <dc:Bounds x="2069" y="570" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0lm82rn_di" bpmnElement="Gateway_SubProcess_PostApprovalJoin">
-        <dc:Bounds x="2269" y="435" width="50" height="50" />
+        <dc:Bounds x="2284" y="445" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2180" y="450" width="69" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0088mkk_di" bpmnElement="Gateway_SubProcess_PostApprovalInclusiveFork">
-        <dc:Bounds x="2449" y="435" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2509" y="446" width="69" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0fwvjdv_di" bpmnElement="ServiceTask_SubProcess_StandardFollowUp">
-        <dc:Bounds x="2594" y="280" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1a76gzx_di" bpmnElement="ServiceTask_SubProcess_FinanceFollowUp">
-        <dc:Bounds x="2594" y="560" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_05kht76_di" bpmnElement="ServiceTask_SubProcess_ExecutiveFollowUp">
-        <dc:Bounds x="2594" y="420" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_02lw413_di" bpmnElement="EndEvent_SubProcess_PostApproval">
-        <dc:Bounds x="2956" y="442" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2940" y="485" width="69" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0tkhhgn_di" bpmnElement="Gateway_SubProcess_PostApprovalInclusiveJoin">
-        <dc:Bounds x="2789" y="435" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2849" y="446" width="71" height="27" />
+          <dc:Bounds x="2195" y="460" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0gumet5_di" bpmnElement="IntermediateCatchEvent_RequesterAcknowledged">
-        <dc:Bounds x="2276" y="302" width="36" height="36" />
+        <dc:Bounds x="2291" y="312" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2258" y="264.5" width="72" height="27" />
+          <dc:Bounds x="2273" y="275" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_02lw413_di" bpmnElement="EndEvent_SubProcess_PostApproval">
+        <dc:Bounds x="3142" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3126" y="465" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03jvvzo_di" bpmnElement="CallActivity_PostApprovalFollowUp">
+        <dc:Bounds x="2420" y="400" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_07ycroo_di" bpmnElement="Flow_07ycroo">
-        <di:waypoint x="1872" y="460" />
-        <di:waypoint x="1949" y="460" />
+        <di:waypoint x="1887" y="470" />
+        <di:waypoint x="1964" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mzl8kg_di" bpmnElement="Flow_0mzl8kg">
-        <di:waypoint x="1974" y="435" />
-        <di:waypoint x="1974" y="320" />
-        <di:waypoint x="2064" y="320" />
+        <di:waypoint x="1989" y="445" />
+        <di:waypoint x="1989" y="330" />
+        <di:waypoint x="2079" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uvmiid_di" bpmnElement="Flow_1uvmiid">
-        <di:waypoint x="1974" y="485" />
-        <di:waypoint x="1974" y="600" />
-        <di:waypoint x="2054" y="600" />
+        <di:waypoint x="1989" y="495" />
+        <di:waypoint x="1989" y="610" />
+        <di:waypoint x="2069" y="610" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_099lhii_di" bpmnElement="Flow_099lhii">
-        <di:waypoint x="2164" y="320" />
-        <di:waypoint x="2276" y="320" />
+        <di:waypoint x="2179" y="330" />
+        <di:waypoint x="2291" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1pnabw3_di" bpmnElement="Flow_1pnabw3">
-        <di:waypoint x="2154" y="600" />
-        <di:waypoint x="2294" y="600" />
-        <di:waypoint x="2294" y="485" />
+        <di:waypoint x="2169" y="610" />
+        <di:waypoint x="2309" y="610" />
+        <di:waypoint x="2309" y="495" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j6xrdq_di" bpmnElement="Flow_0j6xrdq">
-        <di:waypoint x="2294" y="338" />
-        <di:waypoint x="2294" y="435" />
+        <di:waypoint x="2309" y="348" />
+        <di:waypoint x="2309" y="445" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1nxn3qz_di" bpmnElement="Flow_1nxn3qz">
-        <di:waypoint x="2319" y="460" />
-        <di:waypoint x="2449" y="460" />
+      <bpmndi:BPMNEdge id="Flow_0picc31_di" bpmnElement="Flow_0picc31">
+        <di:waypoint x="2334" y="470" />
+        <di:waypoint x="2377" y="470" />
+        <di:waypoint x="2377" y="440" />
+        <di:waypoint x="2420" y="440" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ed7fre_di" bpmnElement="Flow_0ed7fre">
-        <di:waypoint x="2474" y="435" />
-        <di:waypoint x="2474" y="320" />
-        <di:waypoint x="2594" y="320" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2467" y="375" width="45" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0nxdwg3_di" bpmnElement="Flow_0nxdwg3">
-        <di:waypoint x="2474" y="485" />
-        <di:waypoint x="2474" y="600" />
-        <di:waypoint x="2594" y="600" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2469" y="540" width="40" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1i7t2gy_di" bpmnElement="Flow_1i7t2gy">
-        <di:waypoint x="2499" y="460" />
-        <di:waypoint x="2594" y="460" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2523" y="442" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0xyhbee_di" bpmnElement="Flow_0xyhbee">
-        <di:waypoint x="2694" y="320" />
-        <di:waypoint x="2814" y="320" />
-        <di:waypoint x="2814" y="435" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_13yijdq_di" bpmnElement="Flow_13yijdq">
-        <di:waypoint x="2694" y="600" />
-        <di:waypoint x="2814" y="600" />
-        <di:waypoint x="2814" y="485" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0sp5aix_di" bpmnElement="Flow_0sp5aix">
-        <di:waypoint x="2694" y="460" />
-        <di:waypoint x="2789" y="460" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1s2pumq_di" bpmnElement="Flow_1s2pumq">
-        <di:waypoint x="2839" y="460" />
-        <di:waypoint x="2956" y="460" />
+      <bpmndi:BPMNEdge id="Flow_1u4yy62_di" bpmnElement="Flow_1u4yy62">
+        <di:waypoint x="2520" y="440" />
+        <di:waypoint x="3142" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1478xnw_di" bpmnElement="BoundaryEvent_RequesterNotificationError">
-        <dc:Bounds x="2482" y="192" width="36" height="36" />
+        <dc:Bounds x="2497" y="202" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2459" y="162" width="82" height="14" />
+          <dc:Bounds x="2474" y="172" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_Flow_Start_To_ApprovalPolicy" bpmnElement="Flow_Start_To_ApprovalPolicy">
@@ -565,25 +475,25 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1if7nxc_di" bpmnElement="Flow_1if7nxc">
         <di:waypoint x="1700" y="470" />
-        <di:waypoint x="1790" y="470" />
+        <di:waypoint x="1805" y="470" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1722" y="448" width="48" height="14" />
+          <dc:Bounds x="1730" y="448" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06tp7t7_di" bpmnElement="Flow_06tp7t7">
-        <di:waypoint x="3030" y="455" />
-        <di:waypoint x="3272" y="455" />
+        <di:waypoint x="3198" y="438" />
+        <di:waypoint x="3462" y="438" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_065x7oj_di" bpmnElement="Flow_065x7oj">
-        <di:waypoint x="2500" y="192" />
-        <di:waypoint x="2500" y="120" />
+        <di:waypoint x="2515" y="202" />
+        <di:waypoint x="2515" y="120" />
         <di:waypoint x="2810" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ya2xxt_di" bpmnElement="Flow_1ya2xxt">
         <di:waypoint x="2910" y="120" />
-        <di:waypoint x="3091" y="120" />
-        <di:waypoint x="3091" y="455" />
-        <di:waypoint x="3272" y="455" />
+        <di:waypoint x="3280" y="120" />
+        <di:waypoint x="3280" y="438" />
+        <di:waypoint x="3462" y="438" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
