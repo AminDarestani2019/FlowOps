@@ -11,6 +11,7 @@ using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.GetPurch
 using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.SubmitPurchaseRequest;
 using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.RejectPurchaseRequest;
 using FlowOps.Modules.Procurement.Infrastructure.DependencyInjection;
+using FlowOps.Modules.Procurement.Application.Features.PurchaseRequests.AcknowledgePurchaseRequest;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddScoped<GetMyPurchaseRequestsHandler>();
 builder.Services.AddScoped<SubmitPurchaseRequestHandler>();
 builder.Services.AddScoped<ApprovePurchaseRequestHandler>();
 builder.Services.AddScoped<RejectPurchaseRequestHandler>();
+builder.Services.AddScoped<AcknowledgePurchaseRequestHandler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails.Handler>();
@@ -90,5 +92,6 @@ GetTaskDetailsEndpoint.Map(app);
 CompleteTaskEndpoint.Map(app);
 ApprovePurchaseRequestEndpoint.Map(app);
 RejectPurchaseRequestEndpoint.Map(app);
+AcknowledgePurchaseRequestEndpoint.Map(app);
 
 app.Run();

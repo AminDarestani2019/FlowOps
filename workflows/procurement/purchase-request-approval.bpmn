@@ -130,7 +130,7 @@
           <zeebe:taskDefinition type="flowops.procurement.notify-requester" />
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0mzl8kg</bpmn:incoming>
-        <bpmn:outgoing>Flow_1grxdva</bpmn:outgoing>
+        <bpmn:outgoing>Flow_099lhii</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0mzl8kg" sourceRef="Gateway_SubProcess_PostApprovalFork" targetRef="ServiceTask_SubProcess_NotifyRequester" />
       <bpmn:sequenceFlow id="Flow_1uvmiid" sourceRef="Gateway_SubProcess_PostApprovalFork" targetRef="ServiceTask_SubProcess_RecordApprovalAudit" />
@@ -142,11 +142,10 @@
         <bpmn:outgoing>Flow_1pnabw3</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:parallelGateway id="Gateway_SubProcess_PostApprovalJoin" name="Post Approval Join">
-        <bpmn:incoming>Flow_1grxdva</bpmn:incoming>
         <bpmn:incoming>Flow_1pnabw3</bpmn:incoming>
+        <bpmn:incoming>Flow_0j6xrdq</bpmn:incoming>
         <bpmn:outgoing>Flow_1nxn3qz</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:sequenceFlow id="Flow_1grxdva" sourceRef="ServiceTask_SubProcess_NotifyRequester" targetRef="Gateway_SubProcess_PostApprovalJoin" />
       <bpmn:sequenceFlow id="Flow_1pnabw3" sourceRef="ServiceTask_SubProcess_RecordApprovalAudit" targetRef="Gateway_SubProcess_PostApprovalJoin" />
       <bpmn:inclusiveGateway id="Gateway_SubProcess_PostApprovalInclusiveFork" name="Post Approval Follow-up">
         <bpmn:incoming>Flow_1nxn3qz</bpmn:incoming>
@@ -198,12 +197,24 @@
         <bpmn:incoming>Flow_13yijdq</bpmn:incoming>
         <bpmn:outgoing>Flow_1s2pumq</bpmn:outgoing>
       </bpmn:inclusiveGateway>
+      <bpmn:intermediateCatchEvent id="IntermediateCatchEvent_RequesterAcknowledged" name="Requester Acknowledged">
+        <bpmn:incoming>Flow_099lhii</bpmn:incoming>
+        <bpmn:outgoing>Flow_0j6xrdq</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1c2mv81" messageRef="Message_06hjh1m" />
+      </bpmn:intermediateCatchEvent>
+      <bpmn:sequenceFlow id="Flow_099lhii" sourceRef="ServiceTask_SubProcess_NotifyRequester" targetRef="IntermediateCatchEvent_RequesterAcknowledged" />
+      <bpmn:sequenceFlow id="Flow_0j6xrdq" sourceRef="IntermediateCatchEvent_RequesterAcknowledged" targetRef="Gateway_SubProcess_PostApprovalJoin" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_1if7nxc" name="Approved" sourceRef="Gateway_ProcurementDecision" targetRef="SubProcess_PostApprovalProcessing">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=decision = "approved"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_06tp7t7" sourceRef="SubProcess_PostApprovalProcessing" targetRef="EndEvent_Approved" />
   </bpmn:process>
+  <bpmn:message id="Message_06hjh1m" name="procurement.requester-acknowledged">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=purchaseRequestId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_PurchaseRequestApproval">
     <bpmndi:BPMNPlane id="BPMNPlane_PurchaseRequestApproval" bpmnElement="purchase-request-approval">
       <bpmndi:BPMNShape id="Shape_StartEvent_Submitted" bpmnElement="StartEvent_Submitted">
@@ -263,16 +274,16 @@
           <dc:Bounds x="1643" y="287.5" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_EndEvent_Rejected" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1170" y="530" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1166" y="566" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_EndEvent_Approved" bpmnElement="EndEvent_Approved">
         <dc:Bounds x="3222" y="317" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="3216" y="293" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Rejected" bpmnElement="EndEvent_Rejected">
+        <dc:Bounds x="1170" y="530" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1166" y="566" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09jp3ww_di" bpmnElement="SubProcess_PostApprovalProcessing" isExpanded="true">
@@ -291,12 +302,12 @@
           <dc:Bounds x="2078.5" y="326" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1nzoi1z_di" bpmnElement="ServiceTask_SubProcess_RecordApprovalAudit">
-        <dc:Bounds x="2124" y="440" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fr5tct_di" bpmnElement="ServiceTask_SubProcess_NotifyRequester">
         <dc:Bounds x="2134" y="160" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nzoi1z_di" bpmnElement="ServiceTask_SubProcess_RecordApprovalAudit">
+        <dc:Bounds x="2124" y="440" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0lm82rn_di" bpmnElement="Gateway_SubProcess_PostApprovalJoin">
         <dc:Bounds x="2339" y="315" width="50" height="50" />
@@ -331,6 +342,12 @@
           <dc:Bounds x="2919" y="326" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0gumet5_di" bpmnElement="IntermediateCatchEvent_RequesterAcknowledged">
+        <dc:Bounds x="2346" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2328" y="144.5" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_07ycroo_di" bpmnElement="Flow_07ycroo">
         <di:waypoint x="1942" y="340" />
         <di:waypoint x="2019" y="340" />
@@ -349,11 +366,6 @@
         <di:waypoint x="2224" y="480" />
         <di:waypoint x="2364" y="480" />
         <di:waypoint x="2364" y="365" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1grxdva_di" bpmnElement="Flow_1grxdva">
-        <di:waypoint x="2234" y="200" />
-        <di:waypoint x="2364" y="200" />
-        <di:waypoint x="2364" y="315" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1nxn3qz_di" bpmnElement="Flow_1nxn3qz">
         <di:waypoint x="2389" y="340" />
@@ -387,18 +399,26 @@
         <di:waypoint x="2884" y="200" />
         <di:waypoint x="2884" y="315" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sp5aix_di" bpmnElement="Flow_0sp5aix">
+        <di:waypoint x="2764" y="340" />
+        <di:waypoint x="2859" y="340" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_13yijdq_di" bpmnElement="Flow_13yijdq">
         <di:waypoint x="2764" y="480" />
         <di:waypoint x="2884" y="480" />
         <di:waypoint x="2884" y="365" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0sp5aix_di" bpmnElement="Flow_0sp5aix">
-        <di:waypoint x="2764" y="340" />
-        <di:waypoint x="2859" y="340" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1s2pumq_di" bpmnElement="Flow_1s2pumq">
         <di:waypoint x="2909" y="340" />
         <di:waypoint x="3026" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_099lhii_di" bpmnElement="Flow_099lhii">
+        <di:waypoint x="2234" y="200" />
+        <di:waypoint x="2346" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j6xrdq_di" bpmnElement="Flow_0j6xrdq">
+        <di:waypoint x="2364" y="218" />
+        <di:waypoint x="2364" y="315" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_Start_To_ApprovalPolicy" bpmnElement="Flow_Start_To_ApprovalPolicy">
         <di:waypoint x="196" y="350" />

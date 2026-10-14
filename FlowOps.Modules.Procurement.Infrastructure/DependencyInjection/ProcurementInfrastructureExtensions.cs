@@ -67,6 +67,20 @@ public static class ProcurementInfrastructureExtensions
                     new Uri(options.BaseUrl);
             });
 
+        services.AddHttpClient<
+            IWorkflowMessageCorrelator,
+            CamundaMessageClient>(
+            (serviceProvider, client) =>
+            {
+                var options =
+                    serviceProvider
+                        .GetRequiredService<IOptions<CamundaOptions>>()
+                        .Value;
+
+                client.BaseAddress =
+                    new Uri(options.BaseUrl);
+            });
+
         services.Configure<CamundaJobWorkerOptions>(
             configuration.GetSection(
                 CamundaJobWorkerOptions.SectionName));
