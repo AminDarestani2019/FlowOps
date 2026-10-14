@@ -14,4 +14,6 @@ internal sealed class CamundaJobWorkerOptions
     public long RequestTimeoutMilliseconds { get; init; } = 5_000;
 
     public int EmptyPollDelayMilliseconds { get; init; } = 1_000;
+
+    public bool SimulateRequesterNotificationFailure { get; init; } = false;
 }

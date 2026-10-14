@@ -59,4 +59,29 @@ internal sealed class CamundaJobClient(
 
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task ThrowErrorAsync(
+        string jobKey,
+        string errorCode,
+        string? errorMessage = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(jobKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(errorCode);
+
+        var payload = new
+        {
+            errorCode,
+            errorMessage
+        };
+
+        using var response =
+            await httpClient.PostAsJsonAsync(
+                $"/v2/jobs/{jobKey}/error",
+                payload,
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
 }

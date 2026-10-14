@@ -25,6 +25,8 @@ internal sealed class CamundaJobWorker(
     private const string ExecutiveFollowUpJobType =
         "flowops.procurement.executive-follow-up";
 
+    private const string RequesterNotificationUnavailableErrorCode =
+        "REQUESTER_NOTIFICATION_UNAVAILABLE";
 
     private readonly CamundaJobWorkerOptions _options =
         options.Value;
@@ -131,9 +133,28 @@ internal sealed class CamundaJobWorker(
                 job.ProcessInstanceKey,
                 job.ElementId);
 
-            await handler(
-                job,
-                cancellationToken);
+            try
+            {
+                await handler(
+                    job,
+                    cancellationToken);
+            }
+            catch (CamundaBpmnErrorException bpmnError)
+            {
+                await jobClient.ThrowErrorAsync(
+                    job.JobKey,
+                    bpmnError.ErrorCode,
+                    bpmnError.Message,
+                    cancellationToken);
+
+                logger.LogWarning(
+                    "Camunda BPMN error thrown. JobKey={JobKey}, JobType={JobType}, ErrorCode={ErrorCode}",
+                    job.JobKey,
+                    job.Type,
+                    bpmnError.ErrorCode);
+
+                return;
+            }
 
             await jobClient.CompleteAsync(
                 job.JobKey,
@@ -152,8 +173,9 @@ internal sealed class CamundaJobWorker(
                 job.JobKey,
                 job.Type);
 
-            // Intentionally do not complete the job.
-            // Camunda job timeout/retry semantics will handle redelivery.
+            // Technical failure:
+            // intentionally do not complete the job.
+            // Camunda timeout/retry semantics will handle redelivery.
             throw;
         }
     }
@@ -174,6 +196,19 @@ internal sealed class CamundaJobWorker(
         CamundaActivatedJobDto job,
         CancellationToken cancellationToken)
     {
+        if (_options.SimulateRequesterNotificationFailure)
+        {
+            logger.LogWarning(
+                "Simulating requester notification business failure. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}, ErrorCode={ErrorCode}",
+                job.ProcessInstanceKey,
+                job.ElementId,
+                RequesterNotificationUnavailableErrorCode);
+
+            throw new CamundaBpmnErrorException(
+                RequesterNotificationUnavailableErrorCode,
+                "No valid requester notification channel is available.");
+        }
+
         logger.LogInformation(
             "Requester notification simulated. ProcessInstanceKey={ProcessInstanceKey}, ElementId={ElementId}",
             job.ProcessInstanceKey,
