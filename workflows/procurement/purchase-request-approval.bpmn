@@ -185,6 +185,24 @@
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_065x7oj" sourceRef="BoundaryEvent_RequesterNotificationError" targetRef="UserTask_ManualNotificationReview" />
     <bpmn:sequenceFlow id="Flow_1ya2xxt" sourceRef="UserTask_ManualNotificationReview" targetRef="EndEvent_Approved" />
+    <bpmn:boundaryEvent id="BoundaryEvent_ManagerApprovalEscalationTimer" name="Manager Approval SLA Timer" cancelActivity="false" attachedToRef="UserTask_ManagerApproval">
+      <bpmn:outgoing>Flow_0hdw0zr</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1ebddzg">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="ServiceTask_ManagerApprovalEscalation" name="Manager Approval Escalation">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="flowops.procurement.manager-approval-escalation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0hdw0zr</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cezvy3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_ManagerApprovalEscalationCompleted" name="Escalation Completed">
+      <bpmn:incoming>Flow_0cezvy3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0hdw0zr" sourceRef="BoundaryEvent_ManagerApprovalEscalationTimer" targetRef="ServiceTask_ManagerApprovalEscalation" />
+    <bpmn:sequenceFlow id="Flow_0cezvy3" sourceRef="ServiceTask_ManagerApprovalEscalation" targetRef="EndEvent_ManagerApprovalEscalationCompleted" />
   </bpmn:process>
   <bpmn:message id="Message_06hjh1m" name="procurement.requester-acknowledged">
     <bpmn:extensionElements>
@@ -194,6 +212,63 @@
   <bpmn:error id="Error_1t0mftf" name="Requester Notification Unavailable" errorCode="REQUESTER_NOTIFICATION_UNAVAILABLE" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_PurchaseRequestApproval">
     <bpmndi:BPMNPlane id="BPMNPlane_PurchaseRequestApproval" bpmnElement="purchase-request-approval">
+      <bpmndi:BPMNShape id="Shape_Gateway_ManagerDecision" bpmnElement="Gateway_ManagerDecision" isMarkerVisible="true">
+        <dc:Bounds x="740" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="720" y="421" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_AfterManager" bpmnElement="Gateway_AfterManager" isMarkerVisible="true">
+        <dc:Bounds x="840" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="829" y="495" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_FinanceApproval" bpmnElement="UserTask_FinanceApproval">
+        <dc:Bounds x="950" y="430" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FinanceDecision" bpmnElement="Gateway_FinanceDecision" isMarkerVisible="true">
+        <dc:Bounds x="1120" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1103" y="495" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_AfterFinance" bpmnElement="Gateway_AfterFinance" isMarkerVisible="true">
+        <dc:Bounds x="1220" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1205" y="495" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_DirectorApproval" bpmnElement="UserTask_DirectorApproval">
+        <dc:Bounds x="1330" y="430" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_DirectorDecision" bpmnElement="Gateway_DirectorDecision" isMarkerVisible="true">
+        <dc:Bounds x="1500" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1483" y="495" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_ProcurementApproval" bpmnElement="UserTask_ProcurementApproval">
+        <dc:Bounds x="1610" y="430" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ProcurementDecision" bpmnElement="Gateway_ProcurementDecision" isMarkerVisible="true">
+        <dc:Bounds x="1790" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1783" y="408" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Approved" bpmnElement="EndEvent_Approved">
+        <dc:Bounds x="3602" y="420" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3596" y="396" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Rejected" bpmnElement="EndEvent_Rejected">
+        <dc:Bounds x="1310" y="650" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1306" y="686" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_StartEvent_Submitted" bpmnElement="StartEvent_Submitted">
         <dc:Bounds x="160" y="452" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -203,297 +278,264 @@
       <bpmndi:BPMNShape id="Shape_BusinessRuleTask_DetermineApprovalLevel" bpmnElement="BusinessRuleTask_DetermineApprovalLevel">
         <dc:Bounds x="240" y="430" width="140" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_UserTask_ManagerApproval" bpmnElement="UserTask_ManagerApproval">
-        <dc:Bounds x="430" y="430" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_ManagerDecision" bpmnElement="Gateway_ManagerDecision" isMarkerVisible="true">
-        <dc:Bounds x="600" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="581" y="495" width="89" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_AfterManager" bpmnElement="Gateway_AfterManager" isMarkerVisible="true">
-        <dc:Bounds x="700" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="689" y="495" width="73" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_UserTask_FinanceApproval" bpmnElement="UserTask_FinanceApproval">
-        <dc:Bounds x="810" y="430" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_FinanceDecision" bpmnElement="Gateway_FinanceDecision" isMarkerVisible="true">
-        <dc:Bounds x="980" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="963" y="495" width="85" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_AfterFinance" bpmnElement="Gateway_AfterFinance" isMarkerVisible="true">
-        <dc:Bounds x="1080" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1065" y="495" width="81" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_UserTask_DirectorApproval" bpmnElement="UserTask_DirectorApproval">
-        <dc:Bounds x="1190" y="430" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_DirectorDecision" bpmnElement="Gateway_DirectorDecision" isMarkerVisible="true">
-        <dc:Bounds x="1360" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1343" y="495" width="84" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_UserTask_ProcurementApproval" bpmnElement="UserTask_ProcurementApproval">
-        <dc:Bounds x="1470" y="430" width="130" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Gateway_ProcurementDecision" bpmnElement="Gateway_ProcurementDecision" isMarkerVisible="true">
-        <dc:Bounds x="1650" y="445" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1643" y="408" width="63" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_EndEvent_Rejected" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1170" y="650" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1166" y="686" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_EndEvent_Approved" bpmnElement="EndEvent_Approved">
-        <dc:Bounds x="3462" y="420" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3456" y="396" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0pz1alu_di" bpmnElement="UserTask_ManualNotificationReview">
-        <dc:Bounds x="2810" y="80" width="100" height="80" />
+        <dc:Bounds x="2950" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_ManagerApproval" bpmnElement="UserTask_ManagerApproval">
+        <dc:Bounds x="440" y="430" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hmx70a_di" bpmnElement="ServiceTask_ManagerApprovalEscalation">
+        <dc:Bounds x="450" y="640" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04gem77_di" bpmnElement="EndEvent_ManagerApprovalEscalationCompleted">
+        <dc:Bounds x="482" y="832" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="473" y="875" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09jp3ww_di" bpmnElement="SubProcess_PostApprovalProcessing" isExpanded="true">
-        <dc:Bounds x="1805" y="220" width="1393" height="490" />
+        <dc:Bounds x="1945" y="220" width="1393" height="490" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1935vgv_di" bpmnElement="StartEvent_PostApproval">
-        <dc:Bounds x="1851" y="452" width="36" height="36" />
+        <dc:Bounds x="1991" y="452" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1835" y="495" width="69" height="27" />
+          <dc:Bounds x="1975" y="495" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_13hhai4_di" bpmnElement="Gateway_SubProcess_PostApprovalFork">
-        <dc:Bounds x="1964" y="445" width="50" height="50" />
+        <dc:Bounds x="2104" y="445" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2024" y="456" width="69" height="27" />
+          <dc:Bounds x="2164" y="456" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fr5tct_di" bpmnElement="ServiceTask_SubProcess_NotifyRequester">
-        <dc:Bounds x="2079" y="290" width="100" height="80" />
+        <dc:Bounds x="2219" y="290" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1nzoi1z_di" bpmnElement="ServiceTask_SubProcess_RecordApprovalAudit">
-        <dc:Bounds x="2069" y="570" width="100" height="80" />
+        <dc:Bounds x="2209" y="570" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0lm82rn_di" bpmnElement="Gateway_SubProcess_PostApprovalJoin">
-        <dc:Bounds x="2284" y="445" width="50" height="50" />
+        <dc:Bounds x="2424" y="445" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2195" y="460" width="69" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0gumet5_di" bpmnElement="IntermediateCatchEvent_RequesterAcknowledged">
-        <dc:Bounds x="2291" y="312" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2273" y="275" width="72" height="27" />
+          <dc:Bounds x="2335" y="460" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_02lw413_di" bpmnElement="EndEvent_SubProcess_PostApproval">
-        <dc:Bounds x="3142" y="422" width="36" height="36" />
+        <dc:Bounds x="3282" y="422" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3126" y="465" width="69" height="27" />
+          <dc:Bounds x="3266" y="465" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0gumet5_di" bpmnElement="IntermediateCatchEvent_RequesterAcknowledged">
+        <dc:Bounds x="2431" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2413" y="275" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_03jvvzo_di" bpmnElement="CallActivity_PostApprovalFollowUp">
-        <dc:Bounds x="2420" y="400" width="100" height="80" />
+        <dc:Bounds x="2560" y="400" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_07ycroo_di" bpmnElement="Flow_07ycroo">
-        <di:waypoint x="1887" y="470" />
-        <di:waypoint x="1964" y="470" />
+        <di:waypoint x="2027" y="470" />
+        <di:waypoint x="2104" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mzl8kg_di" bpmnElement="Flow_0mzl8kg">
-        <di:waypoint x="1989" y="445" />
-        <di:waypoint x="1989" y="330" />
-        <di:waypoint x="2079" y="330" />
+        <di:waypoint x="2129" y="445" />
+        <di:waypoint x="2129" y="330" />
+        <di:waypoint x="2219" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uvmiid_di" bpmnElement="Flow_1uvmiid">
-        <di:waypoint x="1989" y="495" />
-        <di:waypoint x="1989" y="610" />
-        <di:waypoint x="2069" y="610" />
+        <di:waypoint x="2129" y="495" />
+        <di:waypoint x="2129" y="610" />
+        <di:waypoint x="2209" y="610" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_099lhii_di" bpmnElement="Flow_099lhii">
-        <di:waypoint x="2179" y="330" />
-        <di:waypoint x="2291" y="330" />
+        <di:waypoint x="2319" y="330" />
+        <di:waypoint x="2431" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1pnabw3_di" bpmnElement="Flow_1pnabw3">
-        <di:waypoint x="2169" y="610" />
         <di:waypoint x="2309" y="610" />
-        <di:waypoint x="2309" y="495" />
+        <di:waypoint x="2449" y="610" />
+        <di:waypoint x="2449" y="495" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j6xrdq_di" bpmnElement="Flow_0j6xrdq">
-        <di:waypoint x="2309" y="348" />
-        <di:waypoint x="2309" y="445" />
+        <di:waypoint x="2449" y="348" />
+        <di:waypoint x="2449" y="445" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0picc31_di" bpmnElement="Flow_0picc31">
-        <di:waypoint x="2334" y="470" />
-        <di:waypoint x="2377" y="470" />
-        <di:waypoint x="2377" y="440" />
-        <di:waypoint x="2420" y="440" />
+        <di:waypoint x="2474" y="470" />
+        <di:waypoint x="2517" y="470" />
+        <di:waypoint x="2517" y="440" />
+        <di:waypoint x="2560" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1u4yy62_di" bpmnElement="Flow_1u4yy62">
-        <di:waypoint x="2520" y="440" />
-        <di:waypoint x="3142" y="440" />
+        <di:waypoint x="2660" y="440" />
+        <di:waypoint x="3282" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1478xnw_di" bpmnElement="BoundaryEvent_RequesterNotificationError">
-        <dc:Bounds x="2497" y="202" width="36" height="36" />
+        <dc:Bounds x="2637" y="202" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2474" y="172" width="82" height="14" />
+          <dc:Bounds x="2614" y="172" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ghf6em_di" bpmnElement="BoundaryEvent_ManagerApprovalEscalationTimer">
+        <dc:Bounds x="482" y="492" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="455" y="535" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Manager_To_Decision" bpmnElement="Flow_Manager_To_Decision">
+        <di:waypoint x="560" y="470" />
+        <di:waypoint x="740" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Rejected" bpmnElement="Flow_ManagerDecision_To_Rejected">
+        <di:waypoint x="765" y="495" />
+        <di:waypoint x="765" y="668" />
+        <di:waypoint x="1310" y="668" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="758" y="572" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Routing" bpmnElement="Flow_ManagerDecision_To_Routing">
+        <di:waypoint x="790" y="470" />
+        <di:waypoint x="840" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="791" y="445" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_Manager_To_Procurement" bpmnElement="Flow_ManagerRoute_Manager_To_Procurement">
+        <di:waypoint x="865" y="445" />
+        <di:waypoint x="865" y="380" />
+        <di:waypoint x="1675" y="380" />
+        <di:waypoint x="1675" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1235" y="355" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinance_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinance_To_Finance">
+        <di:waypoint x="890" y="470" />
+        <di:waypoint x="950" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="894" y="445" width="53" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinanceDirector_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance">
+        <di:waypoint x="865" y="495" />
+        <di:waypoint x="865" y="530" />
+        <di:waypoint x="1010" y="530" />
+        <di:waypoint x="1010" y="510" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="911" y="505" width="53" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Finance_To_Decision" bpmnElement="Flow_Finance_To_Decision">
+        <di:waypoint x="1070" y="470" />
+        <di:waypoint x="1120" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Rejected" bpmnElement="Flow_FinanceDecision_To_Rejected">
+        <di:waypoint x="1145" y="495" />
+        <di:waypoint x="1145" y="668" />
+        <di:waypoint x="1310" y="668" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1138" y="572" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Routing" bpmnElement="Flow_FinanceDecision_To_Routing">
+        <di:waypoint x="1170" y="470" />
+        <di:waypoint x="1220" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1171" y="445" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinance_To_Procurement" bpmnElement="Flow_FinanceRoute_ManagerFinance_To_Procurement">
+        <di:waypoint x="1245" y="445" />
+        <di:waypoint x="1245" y="380" />
+        <di:waypoint x="1675" y="380" />
+        <di:waypoint x="1675" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1416" y="355" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinanceDirector_To_Director" bpmnElement="Flow_FinanceRoute_ManagerFinanceDirector_To_Director">
+        <di:waypoint x="1270" y="470" />
+        <di:waypoint x="1330" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1268" y="445" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Director_To_Decision" bpmnElement="Flow_Director_To_Decision">
+        <di:waypoint x="1450" y="470" />
+        <di:waypoint x="1500" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Rejected" bpmnElement="Flow_DirectorDecision_To_Rejected">
+        <di:waypoint x="1525" y="495" />
+        <di:waypoint x="1525" y="668" />
+        <di:waypoint x="1346" y="668" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1518" y="572" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Procurement" bpmnElement="Flow_DirectorDecision_To_Procurement">
+        <di:waypoint x="1550" y="470" />
+        <di:waypoint x="1610" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1556" y="445" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Procurement_To_Decision" bpmnElement="Flow_Procurement_To_Decision">
+        <di:waypoint x="1740" y="470" />
+        <di:waypoint x="1790" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ProcurementDecision_To_Rejected" bpmnElement="Flow_ProcurementDecision_To_Rejected">
+        <di:waypoint x="1815" y="495" />
+        <di:waypoint x="1815" y="668" />
+        <di:waypoint x="1346" y="668" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1808" y="572" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1if7nxc_di" bpmnElement="Flow_1if7nxc">
+        <di:waypoint x="1840" y="470" />
+        <di:waypoint x="1945" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1870" y="448" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06tp7t7_di" bpmnElement="Flow_06tp7t7">
+        <di:waypoint x="3338" y="438" />
+        <di:waypoint x="3602" y="438" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ya2xxt_di" bpmnElement="Flow_1ya2xxt">
+        <di:waypoint x="3050" y="120" />
+        <di:waypoint x="3420" y="120" />
+        <di:waypoint x="3420" y="438" />
+        <di:waypoint x="3602" y="438" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_Start_To_ApprovalPolicy" bpmnElement="Flow_Start_To_ApprovalPolicy">
         <di:waypoint x="196" y="470" />
         <di:waypoint x="240" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_ApprovalPolicy_To_Manager" bpmnElement="Flow_ApprovalPolicy_To_Manager">
         <di:waypoint x="380" y="470" />
-        <di:waypoint x="430" y="470" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_Manager_To_Decision" bpmnElement="Flow_Manager_To_Decision">
-        <di:waypoint x="550" y="470" />
-        <di:waypoint x="600" y="470" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Rejected" bpmnElement="Flow_ManagerDecision_To_Rejected">
-        <di:waypoint x="625" y="495" />
-        <di:waypoint x="625" y="668" />
-        <di:waypoint x="1170" y="668" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="618" y="572" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ManagerDecision_To_Routing" bpmnElement="Flow_ManagerDecision_To_Routing">
-        <di:waypoint x="650" y="470" />
-        <di:waypoint x="700" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="651" y="445" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_Manager_To_Procurement" bpmnElement="Flow_ManagerRoute_Manager_To_Procurement">
-        <di:waypoint x="725" y="445" />
-        <di:waypoint x="725" y="380" />
-        <di:waypoint x="1535" y="380" />
-        <di:waypoint x="1535" y="430" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1095" y="355" width="70" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinance_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinance_To_Finance">
-        <di:waypoint x="750" y="470" />
-        <di:waypoint x="810" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="754" y="445" width="53" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ManagerRoute_ManagerFinanceDirector_To_Finance" bpmnElement="Flow_ManagerRoute_ManagerFinanceDirector_To_Finance">
-        <di:waypoint x="725" y="495" />
-        <di:waypoint x="725" y="530" />
-        <di:waypoint x="870" y="530" />
-        <di:waypoint x="870" y="510" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="771" y="505" width="53" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_Finance_To_Decision" bpmnElement="Flow_Finance_To_Decision">
-        <di:waypoint x="930" y="470" />
-        <di:waypoint x="980" y="470" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Rejected" bpmnElement="Flow_FinanceDecision_To_Rejected">
-        <di:waypoint x="1005" y="495" />
-        <di:waypoint x="1005" y="668" />
-        <di:waypoint x="1170" y="668" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="998" y="572" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_FinanceDecision_To_Routing" bpmnElement="Flow_FinanceDecision_To_Routing">
-        <di:waypoint x="1030" y="470" />
-        <di:waypoint x="1080" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1031" y="445" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinance_To_Procurement" bpmnElement="Flow_FinanceRoute_ManagerFinance_To_Procurement">
-        <di:waypoint x="1105" y="445" />
-        <di:waypoint x="1105" y="380" />
-        <di:waypoint x="1535" y="380" />
-        <di:waypoint x="1535" y="430" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1276" y="355" width="89" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_FinanceRoute_ManagerFinanceDirector_To_Director" bpmnElement="Flow_FinanceRoute_ManagerFinanceDirector_To_Director">
-        <di:waypoint x="1130" y="470" />
-        <di:waypoint x="1190" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1128" y="445" width="65" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_Director_To_Decision" bpmnElement="Flow_Director_To_Decision">
-        <di:waypoint x="1310" y="470" />
-        <di:waypoint x="1360" y="470" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Rejected" bpmnElement="Flow_DirectorDecision_To_Rejected">
-        <di:waypoint x="1385" y="495" />
-        <di:waypoint x="1385" y="668" />
-        <di:waypoint x="1206" y="668" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1378" y="572" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_DirectorDecision_To_Procurement" bpmnElement="Flow_DirectorDecision_To_Procurement">
-        <di:waypoint x="1410" y="470" />
-        <di:waypoint x="1470" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1416" y="445" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_Procurement_To_Decision" bpmnElement="Flow_Procurement_To_Decision">
-        <di:waypoint x="1600" y="470" />
-        <di:waypoint x="1650" y="470" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Flow_ProcurementDecision_To_Rejected" bpmnElement="Flow_ProcurementDecision_To_Rejected">
-        <di:waypoint x="1675" y="495" />
-        <di:waypoint x="1675" y="668" />
-        <di:waypoint x="1206" y="668" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1668" y="572" width="44" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1if7nxc_di" bpmnElement="Flow_1if7nxc">
-        <di:waypoint x="1700" y="470" />
-        <di:waypoint x="1805" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1730" y="448" width="48" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_06tp7t7_di" bpmnElement="Flow_06tp7t7">
-        <di:waypoint x="3198" y="438" />
-        <di:waypoint x="3462" y="438" />
+        <di:waypoint x="440" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_065x7oj_di" bpmnElement="Flow_065x7oj">
-        <di:waypoint x="2515" y="202" />
-        <di:waypoint x="2515" y="120" />
-        <di:waypoint x="2810" y="120" />
+        <di:waypoint x="2655" y="202" />
+        <di:waypoint x="2655" y="120" />
+        <di:waypoint x="2950" y="120" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ya2xxt_di" bpmnElement="Flow_1ya2xxt">
-        <di:waypoint x="2910" y="120" />
-        <di:waypoint x="3280" y="120" />
-        <di:waypoint x="3280" y="438" />
-        <di:waypoint x="3462" y="438" />
+      <bpmndi:BPMNEdge id="Flow_0hdw0zr_di" bpmnElement="Flow_0hdw0zr">
+        <di:waypoint x="500" y="528" />
+        <di:waypoint x="500" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cezvy3_di" bpmnElement="Flow_0cezvy3">
+        <di:waypoint x="500" y="720" />
+        <di:waypoint x="500" y="832" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

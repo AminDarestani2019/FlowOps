@@ -29,6 +29,9 @@ internal sealed class CamundaJobWorker(
     private const string ProcessApprovedItemJobType =
         "flowops.procurement.process-approved-item";
 
+    private const string ManagerApprovalEscalationJobType =
+        "flowops.procurement.manager-approval-escalation";
+
     private const string RequesterNotificationUnavailableErrorCode =
         "REQUESTER_NOTIFICATION_UNAVAILABLE";
 
@@ -71,6 +74,11 @@ internal sealed class CamundaJobWorker(
             RunWorkerLoopAsync(
                 ProcessApprovedItemJobType,
                 HandleProcessApprovedItemAsync,
+                stoppingToken),
+
+            RunWorkerLoopAsync(
+                ManagerApprovalEscalationJobType,
+                HandleManagerApprovalEscalationAsync,
                 stoppingToken));
     }
 
@@ -296,6 +304,20 @@ internal sealed class CamundaJobWorker(
             "ProcessInstanceKey={ProcessInstanceKey}, " +
             "ElementId={ElementId}",
             purchaseRequestItemId,
+            job.ProcessInstanceKey,
+            job.ElementId);
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleManagerApprovalEscalationAsync(
+        CamundaActivatedJobDto job,
+        CancellationToken cancellationToken)
+    {
+        logger.LogWarning(
+            "Manager approval escalation triggered. " +
+            "ProcessInstanceKey={ProcessInstanceKey}, " +
+            "ElementId={ElementId}",
             job.ProcessInstanceKey,
             job.ElementId);
 
