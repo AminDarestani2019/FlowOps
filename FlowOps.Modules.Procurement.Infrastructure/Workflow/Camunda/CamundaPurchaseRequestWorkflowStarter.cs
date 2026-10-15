@@ -32,17 +32,15 @@ public sealed class CamundaPurchaseRequestWorkflowStarter
 
             variables = new
             {
-                purchaseRequestId =
-                    request.PurchaseRequestId.ToString(),
+                purchaseRequestId = request.PurchaseRequestId.ToString(),
 
-                requesterId =
-                    request.RequesterId.ToString(),
+                requesterId = request.RequesterId.ToString(),
 
-                departmentId =
-                    request.DepartmentId.ToString(),
+                departmentId = request.DepartmentId.ToString(),
 
-                totalAmount =
-                    request.TotalAmount
+                totalAmount = request.TotalAmount,
+
+                purchaseRequestItemIds = request.PurchaseRequestItemIds.Select(x => x.ToString()).ToArray()
             }
         };
 

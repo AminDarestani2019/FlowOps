@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace FlowOps.Modules.Procurement.Infrastructure.Workflow.Camunda;
 
@@ -24,6 +25,9 @@ internal sealed class CamundaJobWorker(
 
     private const string ExecutiveFollowUpJobType =
         "flowops.procurement.executive-follow-up";
+
+    private const string ProcessApprovedItemJobType =
+        "flowops.procurement.process-approved-item";
 
     private const string RequesterNotificationUnavailableErrorCode =
         "REQUESTER_NOTIFICATION_UNAVAILABLE";
@@ -62,6 +66,11 @@ internal sealed class CamundaJobWorker(
             RunWorkerLoopAsync(
                 ExecutiveFollowUpJobType,
                 HandleExecutiveFollowUpAsync,
+                stoppingToken),
+
+            RunWorkerLoopAsync(
+                ProcessApprovedItemJobType,
+                HandleProcessApprovedItemAsync,
                 stoppingToken));
     }
 
@@ -252,4 +261,45 @@ internal sealed class CamundaJobWorker(
 
         return Task.CompletedTask;
     }
+
+    private Task HandleProcessApprovedItemAsync(
+        CamundaActivatedJobDto job,
+        CancellationToken cancellationToken)
+    {
+        if (!job.Variables.TryGetValue(
+                "purchaseRequestItemId",
+                out var purchaseRequestItemIdVariable))
+        {
+            throw new InvalidOperationException(
+                "Camunda job variable 'purchaseRequestItemId' was not provided.");
+        }
+
+        if (purchaseRequestItemIdVariable.ValueKind !=
+            JsonValueKind.String)
+        {
+            throw new InvalidOperationException(
+                "Camunda job variable 'purchaseRequestItemId' must be a string.");
+        }
+
+        var purchaseRequestItemId =
+            purchaseRequestItemIdVariable.GetString();
+
+        if (string.IsNullOrWhiteSpace(purchaseRequestItemId))
+        {
+            throw new InvalidOperationException(
+                "Camunda job variable 'purchaseRequestItemId' is empty.");
+        }
+
+        logger.LogInformation(
+            "Approved purchase request item processed. " +
+            "PurchaseRequestItemId={PurchaseRequestItemId}, " +
+            "ProcessInstanceKey={ProcessInstanceKey}, " +
+            "ElementId={ElementId}",
+            purchaseRequestItemId,
+            job.ProcessInstanceKey,
+            job.ElementId);
+
+        return Task.CompletedTask;
+    }
+
 }

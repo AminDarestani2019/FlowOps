@@ -321,7 +321,10 @@ internal sealed class OutboxProcessor : BackgroundService
                 domainEvent.PurchaseRequestId.Value,
                 domainEvent.RequesterId.Value,
                 domainEvent.DepartmentId.Value,
-                purchaseRequest.TotalAmount);
+                purchaseRequest.TotalAmount,
+                purchaseRequest.Items
+                    .Select(x => x.Id.Value)
+                    .ToArray());
 
         var result =
             await workflowStarter.StartAsync(

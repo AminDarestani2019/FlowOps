@@ -45,15 +45,38 @@
       <bpmn:incoming>Flow_08vwuz6</bpmn:incoming>
       <bpmn:incoming>Flow_0b8m451</bpmn:incoming>
       <bpmn:incoming>Flow_030xt7v</bpmn:incoming>
-      <bpmn:outgoing>Flow_07nilh5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_10n8sby</bpmn:outgoing>
     </bpmn:inclusiveGateway>
     <bpmn:sequenceFlow id="Flow_08vwuz6" sourceRef="ServiceTask_FollowUp_Executive" targetRef="Gateway_FollowUpInclusiveJoin" />
     <bpmn:sequenceFlow id="Flow_0b8m451" sourceRef="ServiceTask_FollowUp_Standard" targetRef="Gateway_FollowUpInclusiveJoin" />
     <bpmn:sequenceFlow id="Flow_030xt7v" sourceRef="ServiceTask_FollowUp_Finance" targetRef="Gateway_FollowUpInclusiveJoin" />
     <bpmn:endEvent id="EndEvent_FollowUpCompleted" name="Follow-up Completed">
-      <bpmn:incoming>Flow_07nilh5</bpmn:incoming>
+      <bpmn:incoming>Flow_0gj3biw</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_07nilh5" sourceRef="Gateway_FollowUpInclusiveJoin" targetRef="EndEvent_FollowUpCompleted" />
+
+    <bpmn:serviceTask
+        id="ServiceTask_ProcessApprovedItem"
+        name="Process Approved Item">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition
+            type="flowops.procurement.process-approved-item" />
+      </bpmn:extensionElements>
+
+      <bpmn:incoming>Flow_10n8sby</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gj3biw</bpmn:outgoing>
+
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics
+              inputCollection="=purchaseRequestItemIds"
+              inputElement="purchaseRequestItemId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+
+    </bpmn:serviceTask>
+
+    <bpmn:sequenceFlow id="Flow_10n8sby" sourceRef="Gateway_FollowUpInclusiveJoin" targetRef="ServiceTask_ProcessApprovedItem" />
+    <bpmn:sequenceFlow id="Flow_0gj3biw" sourceRef="ServiceTask_ProcessApprovedItem" targetRef="EndEvent_FollowUpCompleted" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="purchase-request-follow-up">
@@ -87,10 +110,14 @@
           <dc:Bounds x="924.5" y="282" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fxdq9n_di" bpmnElement="ServiceTask_ProcessApprovedItem">
+        <dc:Bounds x="1100" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1fsbqi5_di" bpmnElement="EndEvent_FollowUpCompleted">
-        <dc:Bounds x="1082" y="282" width="36" height="36" />
+        <dc:Bounds x="1332" y="282" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1073" y="325" width="54" height="27" />
+          <dc:Bounds x="1323" y="325" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_06tikgj_di" bpmnElement="Flow_06tikgj">
@@ -134,9 +161,13 @@
         <di:waypoint x="890" y="430" />
         <di:waypoint x="890" y="325" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_07nilh5_di" bpmnElement="Flow_07nilh5">
+      <bpmndi:BPMNEdge id="Flow_10n8sby_di" bpmnElement="Flow_10n8sby">
         <di:waypoint x="915" y="300" />
-        <di:waypoint x="1082" y="300" />
+        <di:waypoint x="1100" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gj3biw_di" bpmnElement="Flow_0gj3biw">
+        <di:waypoint x="1200" y="300" />
+        <di:waypoint x="1332" y="300" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
