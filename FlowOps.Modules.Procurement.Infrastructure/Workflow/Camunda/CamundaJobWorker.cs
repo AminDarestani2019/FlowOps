@@ -1,3 +1,4 @@
+using FlowOps.BuildingBlocks.Domain.Time;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,6 +8,7 @@ namespace FlowOps.Modules.Procurement.Infrastructure.Workflow.Camunda;
 
 internal sealed class CamundaJobWorker(
     CamundaJobClient jobClient,
+    IClock clock,
     IOptions<CamundaJobWorkerOptions> options,
     ILogger<CamundaJobWorker> logger)
     : BackgroundService
@@ -173,8 +175,12 @@ internal sealed class CamundaJobWorker(
                 return;
             }
 
+            var completionVariables =
+                BuildCompletionVariables(job);
+
             await jobClient.CompleteAsync(
                 job.JobKey,
+                variables: completionVariables,
                 cancellationToken: cancellationToken);
 
             logger.LogInformation(
@@ -195,6 +201,29 @@ internal sealed class CamundaJobWorker(
             // Camunda timeout/retry semantics will handle redelivery.
             throw;
         }
+    }
+
+    private IReadOnlyDictionary<string, object?>?
+        BuildCompletionVariables(
+            CamundaActivatedJobDto job)
+    {
+        if (!string.Equals(
+                job.Type,
+                ManagerApprovalEscalationJobType,
+                StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var escalatedAt =
+            clock.UtcNow;
+
+        return new Dictionary<string, object?>
+        {
+            ["managerApprovalEscalated"] = true,
+            ["managerApprovalEscalatedAt"] =
+                escalatedAt.ToString("O")
+        };
     }
 
     private Task HandleRecordApprovalAuditAsync(

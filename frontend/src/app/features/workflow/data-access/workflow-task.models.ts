@@ -1,3 +1,9 @@
+export type WorkflowTaskSlaStatus =
+  | 'Due'
+  | 'Overdue'
+  | 'Escalated'
+  | null;
+
 export interface WorkflowTask {
   taskKey: string;
   name: string;
@@ -8,6 +14,7 @@ export interface WorkflowTask {
   businessId: string | null;
   createdAt: string | null;
   dueDate: string | null;
+  slaStatus: WorkflowTaskSlaStatus;
   priority: number;
 }
 

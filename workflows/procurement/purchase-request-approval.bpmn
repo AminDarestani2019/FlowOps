@@ -13,6 +13,7 @@
     </bpmn:businessRuleTask>
     <bpmn:userTask id="UserTask_ManagerApproval" name="Manager Approval">
       <bpmn:extensionElements>
+        <zeebe:taskSchedule dueDate="= now() + duration(&quot;PT24H&quot;)" />
         <zeebe:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_ApprovalPolicy_To_Manager</bpmn:incoming>
@@ -188,7 +189,7 @@
     <bpmn:boundaryEvent id="BoundaryEvent_ManagerApprovalEscalationTimer" name="Manager Approval SLA Timer" cancelActivity="false" attachedToRef="UserTask_ManagerApproval">
       <bpmn:outgoing>Flow_0hdw0zr</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_1ebddzg">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15S</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT24H</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:serviceTask id="ServiceTask_ManagerApprovalEscalation" name="Manager Approval Escalation">
@@ -198,11 +199,22 @@
       <bpmn:incoming>Flow_0hdw0zr</bpmn:incoming>
       <bpmn:outgoing>Flow_0cezvy3</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:endEvent id="EndEvent_ManagerApprovalEscalationCompleted" name="Escalation Completed">
+
+    <bpmn:userTask id="UserTask_SupervisorSlaReview" name="Supervisor SLA Review">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0cezvy3</bpmn:incoming>
+      <bpmn:outgoing>Flow_SupervisorSlaReview_To_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="EndEvent_ManagerApprovalEscalationCompleted" name="Escalation Completed">
+      <bpmn:incoming>Flow_SupervisorSlaReview_To_End</bpmn:incoming>
     </bpmn:endEvent>
+
     <bpmn:sequenceFlow id="Flow_0hdw0zr" sourceRef="BoundaryEvent_ManagerApprovalEscalationTimer" targetRef="ServiceTask_ManagerApprovalEscalation" />
-    <bpmn:sequenceFlow id="Flow_0cezvy3" sourceRef="ServiceTask_ManagerApprovalEscalation" targetRef="EndEvent_ManagerApprovalEscalationCompleted" />
+    <bpmn:sequenceFlow id="Flow_0cezvy3" sourceRef="ServiceTask_ManagerApprovalEscalation" targetRef="UserTask_SupervisorSlaReview" />
+    <bpmn:sequenceFlow id="Flow_SupervisorSlaReview_To_End" sourceRef="UserTask_SupervisorSlaReview" targetRef="EndEvent_ManagerApprovalEscalationCompleted" />
   </bpmn:process>
   <bpmn:message id="Message_06hjh1m" name="procurement.requester-acknowledged">
     <bpmn:extensionElements>
@@ -289,10 +301,13 @@
         <dc:Bounds x="450" y="640" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_SupervisorSlaReview" bpmnElement="UserTask_SupervisorSlaReview">
+        <dc:Bounds x="440" y="780" width="120" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_04gem77_di" bpmnElement="EndEvent_ManagerApprovalEscalationCompleted">
-        <dc:Bounds x="482" y="832" width="36" height="36" />
+        <dc:Bounds x="482" y="940" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="473" y="875" width="54" height="27" />
+          <dc:Bounds x="473" y="983" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09jp3ww_di" bpmnElement="SubProcess_PostApprovalProcessing" isExpanded="true">
@@ -535,7 +550,11 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cezvy3_di" bpmnElement="Flow_0cezvy3">
         <di:waypoint x="500" y="720" />
-        <di:waypoint x="500" y="832" />
+        <di:waypoint x="500" y="780" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SupervisorSlaReview_To_End" bpmnElement="Flow_SupervisorSlaReview_To_End">
+        <di:waypoint x="500" y="860" />
+        <di:waypoint x="500" y="940" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

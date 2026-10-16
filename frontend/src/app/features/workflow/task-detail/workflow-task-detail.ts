@@ -27,6 +27,10 @@ import {
   WorkflowTask
 } from '../data-access/workflow-task.models';
 
+import {
+  getWorkflowTaskSlaTiming
+} from '../data-access/workflow-task-sla';
+
 @Component({
   selector: 'app-workflow-task-detail',
   standalone: true,
@@ -49,10 +53,33 @@ export class WorkflowTaskDetailComponent {
 
   readonly actionInProgress = signal<'approve' | 'reject' | null>(null);
   readonly actionError = signal<string | null>(null);
-
+  readonly nowMilliseconds = signal(Date.now());
 
   constructor() {
     this.loadTask();
+
+    const timerId =
+      window.setInterval(
+        () => {
+          this.nowMilliseconds.set(
+            Date.now()
+          );
+        },
+        1_000
+      );
+
+    this.destroyRef.onDestroy(
+      () => window.clearInterval(timerId)
+    );
+  }
+
+  slaTiming(
+    task: WorkflowTask
+  ): string | null {
+    return getWorkflowTaskSlaTiming(
+      task,
+      this.nowMilliseconds()
+    );
   }
 
   loadTask(): void {

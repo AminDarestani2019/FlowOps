@@ -13,6 +13,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { WorkflowTaskApi } from '../data-access/workflow-task.api';
 import { WorkflowTask } from '../data-access/workflow-task.models';
+import {
+  getWorkflowTaskSlaTiming
+} from '../data-access/workflow-task-sla';
 
 @Component({
   selector: 'app-workflow-task-inbox',
@@ -30,9 +33,33 @@ export class WorkflowTaskInboxComponent {
   readonly tasks = signal<WorkflowTask[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly nowMilliseconds = signal(Date.now());
 
   constructor() {
     this.loadTasks();
+
+    const timerId =
+      window.setInterval(
+        () => {
+          this.nowMilliseconds.set(
+            Date.now()
+          );
+        },
+        1_000
+      );
+
+    this.destroyRef.onDestroy(
+      () => window.clearInterval(timerId)
+    );
+  }
+
+  slaTiming(
+    task: WorkflowTask
+  ): string | null {
+    return getWorkflowTaskSlaTiming(
+      task,
+      this.nowMilliseconds()
+    );
   }
 
   loadTasks(): void {

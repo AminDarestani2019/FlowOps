@@ -49,6 +49,7 @@
             <th>Process</th>
             <th>Created</th>
             <th>Due Date</th>
+            <th>SLA</th>
             <th>Priority</th>
             <th>Assignee</th>
           </tr>
@@ -97,6 +98,30 @@
               <td>
                 @if (task.dueDate) {
                   {{ task.dueDate | date:'medium' }}
+                } @else {
+                  —
+                }
+              </td>
+
+              <td>
+                @if (task.slaStatus) {
+                  <div class="sla-cell">
+
+                    <span
+                      class="sla-badge"
+                      [class.sla-due]="task.slaStatus === 'Due'"
+                      [class.sla-overdue]="task.slaStatus === 'Overdue'"
+                      [class.sla-escalated]="task.slaStatus === 'Escalated'">
+                      {{ task.slaStatus }}
+                    </span>
+
+                    @if (slaTiming(task); as timing) {
+                      <div class="sla-timing">
+                        {{ timing }}
+                      </div>
+                    }
+
+                  </div>
                 } @else {
                   —
                 }

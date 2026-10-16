@@ -10,7 +10,7 @@
 # See docker-compose-full.yaml for a configuration that also includes Optimize, Identity, Keycloak, Web Modeler, and Console.
 services:
   camunda-data-init:
-    image: camunda/camunda:${CAMUNDA_VERSION}
+    image: camunda/camunda:${CAMUNDA_VERSION:-8.9.13}
     user: "0:0"
     entrypoint: ["/bin/sh", "-c", "chown -R 1001:1001 /usr/local/camunda/camunda-data && chmod 775 /usr/local/camunda/camunda-data"]
     volumes:
@@ -18,7 +18,7 @@ services:
     restart: "no"
 
   orchestration: # Consolidated Zeebe + Operate + Tasklist - https://docs.camunda.io/docs/self-managed/setup/deploy/other/docker/#zeebe
-    image: camunda/camunda:${CAMUNDA_VERSION}
+    image: camunda/camunda:${CAMUNDA_VERSION:-8.9.13}
     container_name: orchestration
     ports:
       - "26500:26500"
@@ -53,7 +53,7 @@ services:
   # Camunda Connectors - executes outbound and inbound connector logic
   # Docs: https://docs.camunda.io/docs/self-managed/connectors-deployment/connectors-configuration/
   connectors:
-    image: camunda/connectors-bundle:${CAMUNDA_CONNECTORS_VERSION}
+    image: camunda/connectors-bundle:${CAMUNDA_CONNECTORS_VERSION:-8.9.6}
     container_name: connectors
     ports:
       - "8086:8080"

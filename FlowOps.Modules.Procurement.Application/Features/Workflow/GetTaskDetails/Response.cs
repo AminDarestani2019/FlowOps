@@ -1,4 +1,4 @@
-﻿namespace FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails;
+namespace FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails;
 
 public sealed record Response(
     string TaskKey,
@@ -10,4 +10,5 @@ public sealed record Response(
     string? BusinessId,
     DateTimeOffset? CreatedAt,
     DateTimeOffset? DueDate,
+    string? SlaStatus,
     int Priority);
