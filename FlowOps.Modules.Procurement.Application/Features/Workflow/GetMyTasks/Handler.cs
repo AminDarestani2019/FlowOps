@@ -1,4 +1,5 @@
 using FlowOps.BuildingBlocks.Domain.Time;
+using FlowOps.Modules.Procurement.Application.Abstractions.Identity;
 using FlowOps.Modules.Procurement.Application.Abstractions.Workflow;
 
 namespace FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks;
@@ -6,6 +7,7 @@ namespace FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks;
 public sealed class Handler(
     IWorkflowTaskReader workflowTaskReader,
     IWorkflowVariableReader workflowVariableReader,
+    IWorkflowCurrentUser currentUser,
     IClock clock)
 {
     private const string ManagerApprovalElementId =
@@ -27,6 +29,14 @@ public sealed class Handler(
 
         foreach (var task in tasks)
         {
+            if (!WorkflowTaskVisibilityPolicy.IsVisibleTo(
+                    task,
+                    currentUser.UserId,
+                    currentUser.CandidateGroups))
+            {
+                continue;
+            }
+
             var managerApprovalEscalated =
                 await IsManagerApprovalEscalatedAsync(
                     task,
@@ -42,8 +52,11 @@ public sealed class Handler(
                 new Response(
                     task.TaskKey,
                     task.Name,
+                    task.ElementId,
                     task.State,
                     task.Assignee,
+                    task.CandidateGroups,
+                    task.CandidateUsers,
                     task.ProcessDefinitionId,
                     task.ProcessInstanceKey,
                     task.CreatedAt,

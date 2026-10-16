@@ -158,6 +158,21 @@ public static class ProcurementInfrastructureExtensions
 
         services.AddHostedService<OutboxProcessor>();
 
+
+        services.AddHttpClient<
+            IWorkflowTaskAssigner,
+            CamundaWorkflowTaskAssigner>(
+            (serviceProvider, client) =>
+            {
+                var options =
+                    serviceProvider
+                        .GetRequiredService<IOptions<CamundaOptions>>()
+                        .Value;
+
+                client.BaseAddress =
+                    new Uri(options.BaseUrl);
+            });
+
         return services;
     }
 }

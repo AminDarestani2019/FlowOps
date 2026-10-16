@@ -5,7 +5,7 @@
       <h1>My Tasks</h1>
 
       <p>
-        Workflow tasks currently waiting for action.
+        Workflow tasks currently available to you or assigned to you.
       </p>
     </div>
 
@@ -30,13 +30,26 @@
     </div>
   }
 
-  @if (!loading() && !error() && tasks().length === 0) {
+  @if (assignmentError()) {
+    <div class="state-card error">
+      {{ assignmentError() }}
+    </div>
+  }
+
+  @if (
+    !loading()
+    && !error()
+    && tasks().length === 0
+  ) {
     <div class="state-card">
       No active workflow tasks.
     </div>
   }
 
-  @if (!loading() && tasks().length > 0) {
+  @if (
+    !loading()
+    && tasks().length > 0
+  ) {
 
     <div class="table-card">
 
@@ -52,19 +65,26 @@
             <th>SLA</th>
             <th>Priority</th>
             <th>Assignee</th>
+            <th>Assignment</th>
           </tr>
         </thead>
 
         <tbody>
 
-          @for (task of tasks(); track task.taskKey) {
+          @for (
+            task of tasks();
+            track task.taskKey
+          ) {
 
             <tr>
 
               <td>
                 <a
                   class="task-link"
-                  [routerLink]="['/workflow/tasks', task.taskKey]">
+                  [routerLink]="[
+                    '/workflow/tasks',
+                    task.taskKey
+                  ]">
                   {{ task.name }}
                 </a>
 
@@ -105,6 +125,7 @@
 
               <td>
                 @if (task.slaStatus) {
+
                   <div class="sla-cell">
 
                     <span
@@ -115,13 +136,17 @@
                       {{ task.slaStatus }}
                     </span>
 
-                    @if (slaTiming(task); as timing) {
+                    @if (
+                      slaTiming(task);
+                      as timing
+                    ) {
                       <div class="sla-timing">
                         {{ timing }}
                       </div>
                     }
 
                   </div>
+
                 } @else {
                   —
                 }
@@ -135,8 +160,64 @@
                 {{ task.assignee ?? 'Unassigned' }}
               </td>
 
-            </tr>
+              <td>
+                <div class="assignment-cell">
 
+                  @if (
+                    assignmentAction(task)
+                    === 'claim'
+                  ) {
+                    <button
+                      type="button"
+                      class="assignment-button"
+                      [disabled]="assignmentInProgress() !== null"
+                      (click)="claim(task)">
+
+                      @if (
+                        assignmentInProgress()
+                        === task.taskKey
+                      ) {
+                        Claiming...
+                      } @else {
+                        Claim
+                      }
+
+                    </button>
+                  }
+
+                  @if (
+                    assignmentAction(task)
+                    === 'unclaim'
+                  ) {
+                    <button
+                      type="button"
+                      class="unclaim-button"
+                      [disabled]="assignmentInProgress() !== null"
+                      (click)="unclaim(task)">
+
+                      @if (
+                        assignmentInProgress()
+                        === task.taskKey
+                      ) {
+                        Unclaiming...
+                      } @else {
+                        Unclaim
+                      }
+
+                    </button>
+                  }
+
+                  @if (
+                    assignmentAction(task)
+                    === null
+                  ) {
+                    —
+                  }
+
+                </div>
+              </td>
+
+            </tr>
           }
 
         </tbody>

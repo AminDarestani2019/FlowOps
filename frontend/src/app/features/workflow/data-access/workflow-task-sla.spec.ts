@@ -14,8 +14,11 @@ function createTask(
   return {
     taskKey: '1',
     name: 'Manager Approval',
+    elementId: 'UserTask_ManagerApproval',
     state: 'CREATED',
     assignee: null,
+    candidateGroups: ['procurement-managers'],
+    candidateUsers: [],
     processDefinitionId: 'purchase-request-approval',
     processInstanceKey: '100',
     businessId: 'business-1',

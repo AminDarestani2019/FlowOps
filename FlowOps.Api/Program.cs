@@ -33,11 +33,11 @@ builder.Services.AddScoped<ApprovePurchaseRequestHandler>();
 builder.Services.AddScoped<RejectPurchaseRequestHandler>();
 builder.Services.AddScoped<AcknowledgePurchaseRequestHandler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
-builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
-builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails.Handler>();
-builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetMyTasks.Handler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.GetTaskDetails.Handler>();
 builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.CompleteTask.Handler>();
+
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.ClaimTask.Handler>();
+builder.Services.AddScoped<FlowOps.Modules.Procurement.Application.Features.Workflow.UnclaimTask.Handler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -49,9 +49,14 @@ builder.Services.AddOpenApi();
 
 if (builder.Environment.IsDevelopment())
 {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddScoped<
         ICurrentUser,
         DevelopmentCurrentUser>();
+
+    builder.Services.AddScoped<
+        IWorkflowCurrentUser,
+        DevelopmentWorkflowCurrentUser>();
 }
 else
 {
@@ -90,6 +95,9 @@ SubmitPurchaseRequestEndpoint.Map(app);
 GetMyTasksEndpoint.Map(app);
 GetTaskDetailsEndpoint.Map(app);
 CompleteTaskEndpoint.Map(app);
+
+ClaimTaskEndpoint.Map(app);
+UnclaimTaskEndpoint.Map(app);
 ApprovePurchaseRequestEndpoint.Map(app);
 RejectPurchaseRequestEndpoint.Map(app);
 AcknowledgePurchaseRequestEndpoint.Map(app);

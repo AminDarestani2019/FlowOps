@@ -122,6 +122,8 @@ internal sealed class CamundaWorkflowTaskReader(
             task.ElementId,
             task.State,
             task.Assignee,
+            task.CandidateGroups,
+            task.CandidateUsers,
             task.ProcessDefinitionId,
             task.ProcessInstanceKey,
             task.CreationDate,

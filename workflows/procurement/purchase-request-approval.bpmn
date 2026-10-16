@@ -14,6 +14,7 @@
     <bpmn:userTask id="UserTask_ManagerApproval" name="Manager Approval">
       <bpmn:extensionElements>
         <zeebe:taskSchedule dueDate="= now() + duration(&quot;PT24H&quot;)" />
+        <zeebe:assignmentDefinition candidateGroups="procurement-managers" />
         <zeebe:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_ApprovalPolicy_To_Manager</bpmn:incoming>
@@ -25,6 +26,7 @@
     <bpmn:exclusiveGateway id="Gateway_AfterManager" name="Approval Level Routing" />
     <bpmn:userTask id="UserTask_FinanceApproval" name="Finance Approval">
       <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="finance-approvers" />
         <zeebe:userTask />
       </bpmn:extensionElements>
     </bpmn:userTask>
@@ -32,12 +34,14 @@
     <bpmn:exclusiveGateway id="Gateway_AfterFinance" name="Finance Routing" />
     <bpmn:userTask id="UserTask_DirectorApproval" name="Director Approval">
       <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="procurement-directors" />
         <zeebe:userTask />
       </bpmn:extensionElements>
     </bpmn:userTask>
     <bpmn:exclusiveGateway id="Gateway_DirectorDecision" name="Director Decision" />
     <bpmn:userTask id="UserTask_ProcurementApproval" name="Procurement Approval">
       <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="procurement-team" />
         <zeebe:userTask />
       </bpmn:extensionElements>
     </bpmn:userTask>
@@ -179,6 +183,7 @@
     </bpmn:boundaryEvent>
     <bpmn:userTask id="UserTask_ManualNotificationReview" name="Manual Notification Review">
       <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="procurement-operations" />
         <zeebe:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_065x7oj</bpmn:incoming>
@@ -202,6 +207,7 @@
 
     <bpmn:userTask id="UserTask_SupervisorSlaReview" name="Supervisor SLA Review">
       <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="procurement-supervisors" />
         <zeebe:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0cezvy3</bpmn:incoming>

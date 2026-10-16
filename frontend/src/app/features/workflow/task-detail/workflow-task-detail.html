@@ -2,6 +2,7 @@
 
   <div class="page-header">
     <div>
+
       <button
         type="button"
         class="back-button"
@@ -12,8 +13,9 @@
       <h1>Task Details</h1>
 
       <p>
-        Workflow task information and current process state.
+        Workflow task information, assignment and current process state.
       </p>
+
     </div>
   </div>
 
@@ -29,7 +31,12 @@
     </div>
   }
 
-  @if (!loading() && !error() && task(); as currentTask) {
+  @if (
+    !loading()
+    && !error()
+    && task();
+    as currentTask
+  ) {
 
     <div class="task-card">
 
@@ -41,7 +48,8 @@
           </h2>
 
           <div class="secondary">
-            Task Key: {{ currentTask.taskKey }}
+            Task Key:
+            {{ currentTask.taskKey }}
           </div>
         </div>
 
@@ -74,6 +82,27 @@
 
           <span class="value">
             {{ currentTask.assignee ?? 'Unassigned' }}
+          </span>
+        </div>
+
+        <div class="detail">
+          <span class="label">
+            Candidate Groups
+          </span>
+
+          <span class="value">
+            @if (
+              currentTask.candidateGroups.length
+              > 0
+            ) {
+              {{
+                currentTask
+                  .candidateGroups
+                  .join(', ')
+              }}
+            } @else {
+              —
+            }
           </span>
         </div>
 
@@ -114,7 +143,10 @@
 
           <span class="value">
             @if (currentTask.createdAt) {
-              {{ currentTask.createdAt | date:'medium' }}
+              {{
+                currentTask.createdAt
+                  | date:'medium'
+              }}
             } @else {
               —
             }
@@ -128,7 +160,10 @@
 
           <span class="value">
             @if (currentTask.dueDate) {
-              {{ currentTask.dueDate | date:'medium' }}
+              {{
+                currentTask.dueDate
+                  | date:'medium'
+              }}
             } @else {
               —
             }
@@ -141,6 +176,7 @@
           </span>
 
           <span class="value">
+
             @if (currentTask.slaStatus) {
               <span
                 class="sla-badge"
@@ -152,6 +188,7 @@
             } @else {
               —
             }
+
           </span>
         </div>
 
@@ -161,7 +198,10 @@
           </span>
 
           <span class="value">
-            @if (slaTiming(currentTask); as timing) {
+            @if (
+              slaTiming(currentTask);
+              as timing
+            ) {
               {{ timing }}
             } @else {
               —
@@ -172,45 +212,102 @@
       </div>
 
       @if (actionError()) {
-  <div class="state-card error">
-    {{ actionError() }}
-  </div>
-}
+        <div class="state-card error">
+          {{ actionError() }}
+        </div>
+      }
 
-    @if (currentTask.state === 'CREATED') {
+      @if (
+        currentTask.state.toUpperCase()
+        === 'CREATED'
+      ) {
 
-      <div class="task-actions">
+        <div class="task-actions">
 
-        <button
-          type="button"
-          class="approve-button"
-          [disabled]="actionInProgress() !== null"
-          (click)="approve()">
+          @if (
+            assignmentAction(currentTask)
+            === 'claim'
+          ) {
 
-          @if (actionInProgress() === 'approve') {
-            Approving...
-          } @else {
-            Approve
+            <button
+              type="button"
+              class="assignment-button"
+              [disabled]="actionInProgress() !== null"
+              (click)="claim()">
+
+              @if (
+                actionInProgress()
+                === 'claim'
+              ) {
+                Claiming...
+              } @else {
+                Claim Task
+              }
+
+            </button>
+
           }
 
-        </button>
+          @if (
+            assignmentAction(currentTask)
+            === 'unclaim'
+          ) {
 
-        <button
-          type="button"
-          class="reject-button"
-          [disabled]="actionInProgress() !== null"
-          (click)="reject()">
+            <button
+              type="button"
+              class="unclaim-button"
+              [disabled]="actionInProgress() !== null"
+              (click)="unclaim()">
 
-          @if (actionInProgress() === 'reject') {
-            Rejecting...
-          } @else {
-            Reject
+              @if (
+                actionInProgress()
+                === 'unclaim'
+              ) {
+                Unclaiming...
+              } @else {
+                Unclaim
+              }
+
+            </button>
+
+            <button
+              type="button"
+              class="approve-button"
+              [disabled]="actionInProgress() !== null"
+              (click)="approve()">
+
+              @if (
+                actionInProgress()
+                === 'approve'
+              ) {
+                Approving...
+              } @else {
+                Approve
+              }
+
+            </button>
+
+            <button
+              type="button"
+              class="reject-button"
+              [disabled]="actionInProgress() !== null"
+              (click)="reject()">
+
+              @if (
+                actionInProgress()
+                === 'reject'
+              ) {
+                Rejecting...
+              } @else {
+                Reject
+              }
+
+            </button>
+
           }
 
-        </button>
-
-      </div>
-    }
+        </div>
+      }
 
     </div>
   }

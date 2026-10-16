@@ -25,6 +25,12 @@ internal sealed class CamundaUserTaskDto
     [JsonPropertyName("assignee")]
     public string? Assignee { get; init; }
 
+    [JsonPropertyName("candidateGroups")]
+    public List<string> CandidateGroups { get; init; } = [];
+
+    [JsonPropertyName("candidateUsers")]
+    public List<string> CandidateUsers { get; init; } = [];
+
     [JsonPropertyName("processDefinitionId")]
     public string ProcessDefinitionId { get; init; } = string.Empty;
 

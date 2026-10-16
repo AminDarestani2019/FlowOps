@@ -7,8 +7,11 @@ export type WorkflowTaskSlaStatus =
 export interface WorkflowTask {
   taskKey: string;
   name: string;
+  elementId: string;
   state: string;
   assignee: string | null;
+  candidateGroups: string[];
+  candidateUsers: string[];
   processDefinitionId: string;
   processInstanceKey: string;
   businessId: string | null;

@@ -6,6 +6,8 @@ public sealed record WorkflowTask(
     string ElementId,
     string State,
     string? Assignee,
+    IReadOnlyList<string> CandidateGroups,
+    IReadOnlyList<string> CandidateUsers,
     string ProcessDefinitionId,
     string ProcessInstanceKey,
     DateTimeOffset? CreatedAt,
